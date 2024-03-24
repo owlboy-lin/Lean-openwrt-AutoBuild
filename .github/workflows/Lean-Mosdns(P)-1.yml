@@ -58,6 +58,8 @@ jobs:
       #     haskell: true
       #     large-packages: true
       #     swap-storage: true 
+      #     docker-images: false
+      
       
       - name: CPU检测
         run: |
