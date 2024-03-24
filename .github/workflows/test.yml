@@ -206,7 +206,7 @@ jobs:
       - name: Compile firmware
         run: |
           cd openwrt
-          echo -e "$(nproc) thread compile"
+          echo -e "$(nproc) thread build."
           make -j$(nproc) || make -j1 || make -j1 V=s
           echo "======================="
           echo "Space usage:"
