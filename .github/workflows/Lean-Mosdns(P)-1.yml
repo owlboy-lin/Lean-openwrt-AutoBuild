@@ -143,6 +143,7 @@ jobs:
         working-directory: ./openwrt
         run: |
           sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
+          ./scripts/feeds clean 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
