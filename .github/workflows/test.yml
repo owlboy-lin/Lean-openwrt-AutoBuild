@@ -37,7 +37,7 @@ env:
   CONFIG_FILE: Lean--p.info
   Firmware_Name: Lean--p
   DIY_P1_SH: smpackage/smpackage-1.sh
-  DIY_P2_SH: smpackage/diy-part2.sh
+  DIY_P2_SH: smpackage/smpackage-2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -163,7 +163,7 @@ jobs:
           rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd-alt,miniupnpd-iptables,wireless-regdb}
           rm -rf feeds/packages/lang/golang
           git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
-          
+
       - name: 安装源 #Install feeds
         run: cd openwrt && ./scripts/feeds install -a
 
