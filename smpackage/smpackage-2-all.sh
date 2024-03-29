@@ -180,17 +180,17 @@ CONFIG_PACKAGE_luci-i18n-webadmin-zh-cn=y
 # CONFIG_PACKAGE_fuse3-utils=y
 
 # 删除不用的插件
-# CONFIG_PACKAGE_autosamba is not set
-# CONFIG_PACKAGE_luci-app-accesscontrol is not set
-# CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn=y
-# CONFIG_PACKAGE_luci-app-upnp is not set
-# CONFIG_PACKAGE_luci-i18n-upnp-zh-cn is not set
-# CONFIG_PACKAGE_luci-app-vlmcsd is not set
-# CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn is not set
-# CONFIG_PACKAGE_luci-app-vsftpd is not set
-# CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn is not set
-# CONFIG_PACKAGE_luci-app-samba4 is not set
-# CONFIG_PACKAGE_luci-i18n-samba4-zh-cn is not set
+# # CONFIG_PACKAGE_autosamba is not set
+# # CONFIG_PACKAGE_luci-app-accesscontrol is not set
+# # CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn=y
+# # CONFIG_PACKAGE_luci-app-upnp is not set
+# # CONFIG_PACKAGE_luci-i18n-upnp-zh-cn is not set
+# # CONFIG_PACKAGE_luci-app-vlmcsd is not set
+# # CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn is not set
+# # CONFIG_PACKAGE_luci-app-vsftpd is not set
+# # CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn is not set
+# # CONFIG_PACKAGE_luci-app-samba4 is not set
+# # CONFIG_PACKAGE_luci-i18n-samba4-zh-cn is not set
 
 " >> .config
 
