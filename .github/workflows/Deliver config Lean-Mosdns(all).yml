@@ -29,10 +29,10 @@
       REPO_URL: https://github.com/coolsnowwolf/lede.git
       REPO_BRANCH: master
       FEEDS_CONF: feeds.conf.default
-      CONFIG_FILE: Lean-Mosdns-netspeed-uugame-smatdns-netdate-ALL.info
-      Firmware_Name: Lean-Mosdns-netspeed-uugame-smatdns-netdate-ALL
+      CONFIG_FILE: .config
+      Firmware_Name: Lean-Mosdns-netspeed-uugame-netdate-ALL
       DIY_P1_SH: smpackage/smpackage-1.sh
-      DIY_P2_SH: smpackage/smpackage-2.sh
+      DIY_P2_SH: smpackage/smpackage-2-p.sh
       UPLOAD_WETRANSFER: false
       TZ: Asia/Shanghai
 
