@@ -110,8 +110,18 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=512
 # ipv6
 CONFIG_PACKAGE_ipv6helper=y
 
+CONFIG_DEFAULT_luci-app-accesscontrol=y
 CONFIG_DEFAULT_luci-app-arpbind=y
-CONFIG_PACKAGE_luci-i18n-arpbind-zh-cn=y
+CONFIG_DEFAULT_luci-app-autoreboot=y
+CONFIG_DEFAULT_luci-app-ddns=y
+CONFIG_DEFAULT_luci-app-filetransfer=y
+CONFIG_DEFAULT_luci-app-nlbwmon=y
+CONFIG_DEFAULT_luci-app-ssr-plus=y
+CONFIG_DEFAULT_luci-app-turboacc=y
+CONFIG_DEFAULT_luci-app-upnp=y
+CONFIG_DEFAULT_luci-app-vlmcsd=y
+CONFIG_DEFAULT_luci-app-vsftpd=y
+CONFIG_DEFAULT_luci-app-wol=y
 
 CONFIG_PACKAGE_luci-app-airplay2=y
 CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn=y
@@ -138,6 +148,7 @@ CONFIG_PACKAGE_luci-i18n-openclash-zh-cn=y
 
 # adguardhome
 CONFIG_PACKAGE_luci-app-adguardhome=y
+CONFIG_PACKAGE_luci-app-adguardhome_INCLUDE_binary=y
 CONFIG_PACKAGE_luci-i18n-adguardhome-zh-cn=y
 
 # mosdns
@@ -172,6 +183,11 @@ CONFIG_PACKAGE_luci-app-store=y
 # luci-app-ttyd=y
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y
+
+CONFIG_PACKAGE_luci-app-unblockmusic=y
+CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
+CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
+CONFIG_PACKAGE_luci-i18n-unblockmusic-zh-cn=y
 
 # luci-app-uugamebooster=y
 CONFIG_PACKAGE_luci-app-uugamebooster=y
