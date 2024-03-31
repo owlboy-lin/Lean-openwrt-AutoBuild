@@ -110,6 +110,23 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=512
 # ipv6
 CONFIG_PACKAGE_ipv6helper=y
 
+CONFIG_DEFAULT_luci-app-accesscontrol=y
+CONFIG_DEFAULT_luci-app-arpbind=y
+CONFIG_DEFAULT_luci-app-autoreboot=y
+CONFIG_DEFAULT_luci-app-ddns=y
+CONFIG_DEFAULT_luci-app-filetransfer=y
+CONFIG_DEFAULT_luci-app-nlbwmon=y
+CONFIG_DEFAULT_luci-app-ssr-plus=y
+CONFIG_DEFAULT_luci-app-turboacc=y
+CONFIG_DEFAULT_luci-app-upnp=y
+CONFIG_DEFAULT_luci-app-vlmcsd=y
+CONFIG_DEFAULT_luci-app-vsftpd=y
+CONFIG_DEFAULT_luci-app-wol=y
+
+CONFIG_PACKAGE_luci-app-airplay2=y
+CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn=y
+
+
 # 自动重启
 CONFIG_PACKAGE_luci-app-autoreboot=y
 CONFIG_PACKAGE_luci-i18n-autoreboot-zh-cn=y
@@ -131,6 +148,7 @@ CONFIG_PACKAGE_luci-i18n-openclash-zh-cn=y
 
 # adguardhome
 CONFIG_PACKAGE_luci-app-adguardhome=y
+CONFIG_PACKAGE_luci-app-adguardhome_INCLUDE_binary=y
 CONFIG_PACKAGE_luci-i18n-adguardhome-zh-cn=y
 
 # mosdns
@@ -166,6 +184,11 @@ CONFIG_PACKAGE_luci-app-store=y
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y
 
+CONFIG_PACKAGE_luci-app-unblockmusic=y
+CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
+CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
+CONFIG_PACKAGE_luci-i18n-unblockmusic-zh-cn=y
+
 # luci-app-uugamebooster=y
 CONFIG_PACKAGE_luci-app-uugamebooster=y
 CONFIG_PACKAGE_luci-i18n-uugamebooster-zh-cn=y
@@ -180,17 +203,17 @@ CONFIG_PACKAGE_luci-i18n-webadmin-zh-cn=y
 # CONFIG_PACKAGE_fuse3-utils=y
 
 # 删除不用的插件
-# # CONFIG_PACKAGE_autosamba is not set
-# # CONFIG_PACKAGE_luci-app-accesscontrol is not set
-# # CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn=y
-# # CONFIG_PACKAGE_luci-app-upnp is not set
-# # CONFIG_PACKAGE_luci-i18n-upnp-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-vlmcsd is not set
-# # CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-vsftpd is not set
-# # CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-samba4 is not set
-# # CONFIG_PACKAGE_luci-i18n-samba4-zh-cn is not set
+CONFIG_PACKAGE_autosamba=y
+CONFIG_PACKAGE_luci-app-accesscontrol=y
+CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn=y
+CONFIG_PACKAGE_luci-app-upnp=y
+CONFIG_PACKAGE_luci-i18n-upnp-zh-cn=y
+CONFIG_PACKAGE_luci-app-vlmcsd=y
+CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn=y
+CONFIG_PACKAGE_luci-app-vsftpd=y
+CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn=y
+CONFIG_PACKAGE_luci-app-samba4=y
+CONFIG_PACKAGE_luci-i18n-samba4-zh-cn=y
 
 " >> .config
 
