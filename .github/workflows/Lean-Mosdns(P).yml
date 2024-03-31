@@ -315,11 +315,19 @@ jobs:
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
 
-#      - name: Upload release asset
-#        if: github.event == 'release'
-#        uses: svenstaro/upload-release-action@v2
-#        with:
-#          repo_token: ${{ secrets.YOURTOKEN }}
-#          file: openwrt/artifact/firmware/*
-#          tag: ${{ github.ref }}
-#          file_glob: true
+      - name: 删除运行记录
+        uses: Mattraks/delete-workflow-runs@main
+        continue-on-error: true
+        with:
+          retain_days: 3     #保留最后多少记录不删除
+          keep_minimum_runs: 0
+
+      - name: 删除自动发布的旧固件
+        uses: dev-drprasad/delete-older-releases@master
+        continue-on-error: true
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        with:
+          keep_latest: 20        #保留多少个releases不删除
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
