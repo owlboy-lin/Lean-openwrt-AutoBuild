@@ -110,21 +110,21 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=512
 # ipv6
 CONFIG_PACKAGE_ipv6helper=y
 
-CONFIG_DEFAULT_luci-app-accesscontrol=y
-CONFIG_DEFAULT_luci-app-arpbind=y
-CONFIG_DEFAULT_luci-app-autoreboot=y
-CONFIG_DEFAULT_luci-app-ddns=y
-CONFIG_DEFAULT_luci-app-filetransfer=y
-CONFIG_DEFAULT_luci-app-nlbwmon=y
-CONFIG_DEFAULT_luci-app-ssr-plus=y
-CONFIG_DEFAULT_luci-app-turboacc=y
-CONFIG_DEFAULT_luci-app-upnp=y
-CONFIG_DEFAULT_luci-app-vlmcsd=y
-CONFIG_DEFAULT_luci-app-vsftpd=y
-CONFIG_DEFAULT_luci-app-wol=y
+# CONFIG_DEFAULT_luci-app-accesscontrol=y
+# CONFIG_DEFAULT_luci-app-arpbind=y
+# CONFIG_DEFAULT_luci-app-autoreboot=y
+# CONFIG_DEFAULT_luci-app-ddns=y
+# CONFIG_DEFAULT_luci-app-filetransfer=y
+# CONFIG_DEFAULT_luci-app-nlbwmon=y
+# CONFIG_DEFAULT_luci-app-ssr-plus=y
+# CONFIG_DEFAULT_luci-app-turboacc=y
+# CONFIG_DEFAULT_luci-app-upnp=y
+# CONFIG_DEFAULT_luci-app-vlmcsd=y
+# CONFIG_DEFAULT_luci-app-vsftpd=y
+# CONFIG_DEFAULT_luci-app-wol=y
 
-CONFIG_PACKAGE_luci-app-airplay2=y
-CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn=y
+# CONFIG_PACKAGE_luci-app-airplay2=y
+# CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn=y
 
 
 # 自动重启
