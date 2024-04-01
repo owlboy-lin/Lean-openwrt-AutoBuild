@@ -130,17 +130,8 @@ jobs:
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
 
-      # - name: 更新源 #Update feeds
-      #   run: cd openwrt && ./scripts/feeds update -a
-      
       - name: 更新源 #Update feeds
-        run: |
-          cd openwrt 
-          ./scripts/feeds update -a 
-          rm -rf feeds/luci/applications/luci-app-mosdns
-          rm -rf feeds/packages/net/{alist,adguardhome,xray*,v2ray*,v2ray*,sing*,smartdns}
-          rm -rf feeds/packages/lang/golang
-          git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
+        run: cd openwrt && ./scripts/feeds update -a
 
       - name: 安装源 #Install feeds
         run: cd openwrt && ./scripts/feeds install -a
@@ -238,7 +229,6 @@ jobs:
         if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt/bin/targets/*/*
-          rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
           
