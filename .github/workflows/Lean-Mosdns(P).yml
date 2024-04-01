@@ -305,10 +305,10 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: 自动发布固件到 Releases
-        uses: softprops/action-gh-release@master
-        if: steps.tag.outputs.status == 'success' && !cancelled()
+        uses: softprops/action-gh-release@v2
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         env:
-          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载
           tag_name: ${{ steps.tag.outputs.release_tag }}
@@ -316,18 +316,16 @@ jobs:
           files: ${{ env.FIRMWARE }}/*
 
       - name: 删除运行记录
-        uses: Mattraks/delete-workflow-runs@main
+        uses: Mattraks/delete-workflow-runs@v2
         continue-on-error: true
         with:
           retain_days: 3     #保留最后多少记录不删除
           keep_minimum_runs: 0
 
       - name: 删除自动发布的旧固件
-        uses: dev-drprasad/delete-older-releases@master
+        uses: dev-drprasad/delete-older-releases@v0.3.3
         continue-on-error: true
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
           keep_latest: 20        #保留多少个releases不删除
           delete_tags: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
