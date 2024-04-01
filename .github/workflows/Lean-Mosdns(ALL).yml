@@ -42,7 +42,7 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: true
-  UPLOAD_RELEASE: false
+  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai 
 
 jobs:
@@ -301,7 +301,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: 自动发布固件到 Releases
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v2
         if: steps.tag.outputs.status == 'success' && !cancelled()
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
@@ -312,14 +312,14 @@ jobs:
           files: ${{ env.FIRMWARE }}/*
 
       - name: 删除运行记录
-        uses: Mattraks/delete-workflow-runs@main
+        uses: Mattraks/delete-workflow-runs@v2
         continue-on-error: true
         with:
           retain_days: 3     #保留最后多少记录不删除
           keep_minimum_runs: 0
 
       - name: 删除自动发布的旧固件
-        uses: dev-drprasad/delete-older-releases@master
+        uses: dev-drprasad/delete-older-releases@v0.3.3
         continue-on-error: true
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
