@@ -4,7 +4,7 @@
 # Copyright (C) 2019 P3TERX
 #
 # Copyright (C) 2020 KFERMercer
-#
+# chmod +x /etc/init.d/netspeedtest
 
 name: Lean-Mosdns(ALL)
 
@@ -27,9 +27,6 @@ on:
 
 permissions:
   contents: read
-
-
-  
 
 
     
@@ -58,19 +55,19 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # - name: 释放Ubuntu磁盘空间
-      #   uses: jlumbroso/free-disk-space@main
-      #   with:
-      #     # this might remove tools that are actually needed,
-      #     # if set to "true" but frees about 6 GB
-      #     tool-cache: true
-      #     # all of these default to true, but feel free to set to
-      #     # "false" if necessary for your workflow
-      #     android: true
-      #     dotnet: true
-      #     haskell: true
-      #     large-packages: true
-      #     swap-storage: true 
+      - name: 释放Ubuntu磁盘空间
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true 
       
       - name: CPU检测
         run: |
@@ -89,23 +86,21 @@ jobs:
 
       - name: 准备完成
         uses: actions/checkout@v4
-
+        
+         
       - name: 初始化系统环境
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          sudo -E apt-get -qq update
-          sudo -E apt-get -qq install build-essential clang flex g++ gawk gcc-multilib gettext \
-          git libncurses5-dev libssl-dev python3-distutils python3-pyelftools python3-setuptools \
-          libpython3-dev rsync unzip zlib1g-dev swig aria2 jq subversion qemu-utils ccache rename \
-          libelf-dev device-tree-compiler libgnutls28-dev coccinelle libgmp3-dev libmpc-dev libfuse-dev
-          sudo -E apt-get -qq purge azure-cli ghc* zulu* llvm* firefox powershell openjdk* dotnet* google* mysql* php* android*
+          ( sudo -E apt-get -qq update
+          sudo -E apt-get -qq install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev patch python3 python2.7 unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion flex uglifyjs gcc-multilib g++-multilib p7zip p7zip-full msmtp libssl-dev texinfo libglib2.0-dev xmlto qemu-utils upx-ucl libelf-dev autoconf automake libtool autopoint device-tree-compiler ccache xsltproc rename antlr3 gperf wget curl swig rsync
+          sudo -E apt-get -qq purge azure-cli ghc* zulu* hhvm llvm* firefox powershell openjdk* dotnet* google* mysql* php* android*
           sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
           sudo -E apt-get -qq autoremove --purge
-          sudo -E apt clean
-          sudo -E timedatectl set-timezone "Asia/Shanghai"
+          sudo -E apt-get -qq clean ) &
+          sudo timedatectl set-timezone "$TZ"
           sudo mkdir -p /workdir
-          sudo chown $USER:$GROUPS /workdir
+          sudo chown $USER:$GROUPS /workdir   
 
       - name: 更新时区、编译时间
         id: date
@@ -118,7 +113,8 @@ jobs:
           echo "编译开始时间..."
           START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
           echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
-          
+
+
       - name: 下载源代码
         working-directory: /workdir
         run: |
@@ -134,8 +130,17 @@ jobs:
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
 
+      # - name: 更新源 #Update feeds
+      #   run: cd openwrt && ./scripts/feeds update -a
+      
       - name: 更新源 #Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
+        run: |
+          cd openwrt 
+          ./scripts/feeds update -a 
+          rm -rf feeds/luci/applications/luci-app-mosdns
+          rm -rf feeds/packages/net/{alist,adguardhome,xray*,v2ray*,v2ray*,sing*,smartdns}
+          rm -rf feeds/packages/lang/golang
+          git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
 
       - name: 安装源 #Install feeds
         run: cd openwrt && ./scripts/feeds install -a
@@ -228,15 +233,15 @@ jobs:
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-
-       - name: 整理固件文件
+      - name: 整理固件文件
         id: organize
         if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt/bin/targets/*/*
+          rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "status=success" >> $GITHUB_OUTPUT      
-
+          echo "status=success" >> $GITHUB_OUTPUT
+          
       - name: Prepare artifact
         run: |
           cd openwrt
@@ -253,27 +258,76 @@ jobs:
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_buildinfo
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_buildinfo
           path: openwrt/artifact/buildinfo/
 
       - name: Deliver package
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_package
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_package
           path: openwrt/artifact/package/
 
       - name: Deliver firmware
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_firmware
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_firmware
           path: openwrt/artifact/firmware/
   
+      - name: 获取内核版本号
+        run: |
+          cd openwrt/bin/targets/x86/64
+          KERNEL_VERSION=$(ls -l *openwrt-x86-64-generic-kernel.bin | awk '{print $9}' | cut -d '-' -f1)
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
-#      - name: Upload release asset
-#        if: github.event == 'release'
-#        uses: svenstaro/upload-release-action@v2
-#        with:
-#          repo_token: ${{ secrets.YOURTOKEN }}
-#          file: openwrt/artifact/firmware/*
-#          tag: ${{ github.ref }}
-#          file_glob: true
+      - name: 生成发布标签
+        id: tag
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        run: |
+          echo "release_tag=$(date +"%Y.%m.%d")-Lean-x86_64" >> $GITHUB_OUTPUT
+          echo "release_date=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
+          touch release.txt
+          echo "
+          ★ 源码 : https://github.com/coolsnowwolf/lede
+          ★ 分支 : master
+          ★ 感谢源码作者无私分享！
+          
+          ⏰ 编译时间：${{ env.FILE_TIME1 }}
+          
+          🎈 内核版本：${{ env.KERNEL_PATCHVER }}
+          
+          🎉 编译版本：${{ env.DISTRIB_REVISION }}
+          
+          🖥 管理地址：192.168.1.1 
+          
+          🌴 名称：root
+          
+          🛠 密码：password" >> release.txt
+          echo "status=success" >> $GITHUB_OUTPUT
+      
+      - name: 自动发布固件到 Releases
+        uses: softprops/action-gh-release@master
+        if: steps.tag.outputs.status == 'success' && !cancelled()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+        with:
+          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载
+          tag_name: ${{ steps.tag.outputs.release_tag }}
+          body_path: release.txt
+          files: ${{ env.FIRMWARE }}/*
+
+      - name: 删除运行记录
+        uses: Mattraks/delete-workflow-runs@main
+        continue-on-error: true
+        with:
+          retain_days: 3     #保留最后多少记录不删除
+          keep_minimum_runs: 0
+
+      - name: 删除自动发布的旧固件
+        uses: dev-drprasad/delete-older-releases@master
+        continue-on-error: true
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        with:
+          keep_latest: 20        #保留多少个releases不删除
+          delete_tags: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
