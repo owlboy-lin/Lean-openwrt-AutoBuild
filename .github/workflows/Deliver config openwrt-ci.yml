@@ -43,14 +43,16 @@ env:
 jobs:
 
 
-  build:
+  build_openwrt:
 
-    runs-on: ubuntu-latest
-    
+     
     name: Deliver config  OpenWrt-CI
     
     if: github.event.repository.owner.id == github.event.sender.id
     
+    runs-on: ubuntu-latest
+
+
     steps:
       - name: CPU检测
         run: |
