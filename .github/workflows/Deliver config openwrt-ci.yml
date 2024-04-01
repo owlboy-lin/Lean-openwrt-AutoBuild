@@ -30,34 +30,21 @@ env:
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE:  .config
   Firmware_Name: OpenWrt-CI
-  DIY_P1_SH: OpenWrt-CI-diy/OpenWrt-CI-diy-1.sh
+  DIY_P1_SH: smpackage/smpackage-1.sh
   DIY_P2_SH: OpenWrt-CI-diy/OpenWrt-CI-diy-2.sh
   GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
   TZ: Asia/Shanghai
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     
     name: Deliver config  OpenWrt-CI
     
     if: github.event.repository.owner.id == github.event.sender.id
     
     steps:
-      - name: 释放Ubuntu磁盘空间
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true 
-      
+     
       - name: CPU检测
         run: |
           echo "警告⚠"
@@ -80,7 +67,7 @@ jobs:
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          # docker rmi `docker images -q`
+          docker rmi `docker images -q`
           sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
           sudo -E apt-mark hold grub-efi-amd64-signed
           sudo -E apt update
@@ -93,6 +80,20 @@ jobs:
           sudo -E timedatectl set-timezone "Asia/Shanghai"
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
+
+      - name: 释放Ubuntu磁盘空间
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true 
         
         
       - name: 更新时区、编译时间
