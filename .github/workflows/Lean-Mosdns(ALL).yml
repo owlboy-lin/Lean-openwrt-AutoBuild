@@ -54,7 +54,7 @@ jobs:
 
 
     name: Lean-Mosdns(ALL)
-
+    
     runs-on: ubuntu-latest
     
     steps:
