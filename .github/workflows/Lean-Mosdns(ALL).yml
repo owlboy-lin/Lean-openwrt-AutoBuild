@@ -37,7 +37,7 @@ env:
   CONFIG_FILE: Lean-Mosdns-netspeed-uugame-netdate-ALL.info
   Firmware_Name: Lean--all
   DIY_P1_SH: smpackage/smpackage-1.sh
-  DIY_P2_SH: smpackage/smpackage-2-all.sh
+  DIY_P2_SH: smpackage/smpackage-2-p.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
