@@ -123,8 +123,10 @@ CONFIG_PACKAGE_ipv6helper=y
 # CONFIG_DEFAULT_luci-app-vsftpd=y
 # CONFIG_DEFAULT_luci-app-wol=y
 
-# CONFIG_PACKAGE_luci-app-airplay2=y
-# CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn=y
+
+# airplay2
+CONFIG_PACKAGE_luci-app-airplay2=y
+CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn=y
 
 
 # 自动重启
