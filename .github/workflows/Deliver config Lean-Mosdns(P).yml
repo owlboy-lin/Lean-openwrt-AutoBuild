@@ -165,7 +165,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}   
 
-      - name: Prepare artifact
+      - name: 整理固件文件
         run: |
           cd openwrt
           mkdir -p ./artifact/buildinfo
@@ -176,7 +176,7 @@ jobs:
           cp -rf ./feeds.conf.default ./artifact/buildinfo/
 
         
-      - name: Upload config
+      - name: 上传配置文件
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.Firmware_Name }}_${{ env.FILE_DATE }}
