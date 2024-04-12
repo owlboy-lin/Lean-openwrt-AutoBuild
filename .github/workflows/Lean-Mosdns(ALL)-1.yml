@@ -6,11 +6,11 @@
 # Copyright (C) 2020 KFERMercer
 # chmod +x /etc/init.d/netspeedtest
 
-name: Lean-Mosdns(ALL)
+name: Lean-Mosdns(ALL)-1
 
 on:
-  schedule:
-    - cron: 0 20 * * *
+#   schedule:
+#     - cron: 0 20 * * *
   # release:
   #   types: [published]
     
@@ -25,8 +25,8 @@ on:
     types: [started]
     
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
 
     
@@ -35,14 +35,14 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: OpenWrt-CI.info
-  Firmware_Name: Lean-Mosdns-netspeed-uugame-netdate-ALL
-  DIY_P1_SH: smpackage/smpackage-1-p.sh
+  Firmware_Name: Lean--all
+  DIY_P1_SH: smpackage/smpackage-1.sh
   DIY_P2_SH: smpackage/smpackage-2-all.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: true
+  UPLOAD_RELEASE: false
   TZ: Asia/Shanghai 
 
 jobs:
@@ -50,7 +50,7 @@ jobs:
   build_openwrt:
 
 
-    name: Lean-Mosdns(ALL)
+    name: Lean-Mosdns(ALL)-1
 
     runs-on: ubuntu-latest
     
@@ -306,7 +306,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载 Lean-Mosdns(ALL) 
+          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载 Lean-Mosdns(ALL)-1
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
