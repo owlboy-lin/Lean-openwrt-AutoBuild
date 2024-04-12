@@ -31,8 +31,8 @@
       FEEDS_CONF: feeds.conf
       CONFIG_FILE: istoreos.info
       Firmware_Name: istoreos
-      DIY_P1_SH: istoreos-1.sh
-      DIY_P2_SH: istoreos-2.sh
+      DIY_P1_SH: istoreos/istoreos-1.sh
+      DIY_P2_SH: istoreos/istoreos-2.sh
       GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
       TZ: Asia/Shanghai
 
