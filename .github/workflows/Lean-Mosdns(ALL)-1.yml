@@ -9,8 +9,8 @@
 name: Lean-Mosdns(ALL)-1
 
 on:
-  schedule:
-    - cron: 0 20 * * *
+#   schedule:
+#     - cron: 0 20 * * *
   # release:
   #   types: [published]
     

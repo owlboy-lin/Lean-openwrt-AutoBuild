@@ -29,7 +29,7 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: OpenWrt-CI.info
-  Firmware_Name: Lean-Mosdns-netspeed-uugame-netdate-ALL
+  Firmware_Name: Lean-ALL-1
   DIY_P1_SH: smpackage/smpackage-1-p.sh
   DIY_P2_SH: smpackage/smpackage-2-all.sh
   UPLOAD_BIN_DIR: false

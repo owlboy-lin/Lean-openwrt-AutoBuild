@@ -35,7 +35,7 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: OpenWrt-CI.info
-  Firmware_Name: Lean--all
+  Firmware_Name: Lean-Mosdns-netspeed-uugame-netdate-ALL
   DIY_P1_SH: smpackage/smpackage-1-p.sh
   DIY_P2_SH: smpackage/smpackage-2-all.sh
   UPLOAD_BIN_DIR: false
@@ -306,7 +306,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载 (Lean-Mosdns(ALL)) 
+          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载 Lean-Mosdns(ALL) 
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
