@@ -23,15 +23,15 @@ on:
         required: true
         default: 'false'
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
         
       
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  # CONFIG_FILE:  .config
+  CONFIG_FILE:  .config
   Firmware_Name: OpenWrt-CI
   DIY_P1_SH: OpenWrt-CI-diy/OpenWrt-CI-diy-1.sh
   DIY_P2_SH: OpenWrt-CI-diy/OpenWrt-CI-diy-2.sh
@@ -131,7 +131,7 @@ jobs:
 
 
       - name: 更新源 #Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
+        run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
 
       - name: 安装源 #Install feeds
         run: cd openwrt && ./scripts/feeds install -a
