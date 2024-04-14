@@ -210,7 +210,7 @@
             cp -rf $(find ./bin/targets/ -type f) ./artifact/firmware/
             cp -rf $(find ./bin/packages/ -type f -name "*.ipk") ./artifact/package/
             cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
-            cd openwrt/artifact
+            cd artifact
             echo "FIRMWARE=$PWD" >> $GITHUB_ENV
             echo "{status}={success}" >> $GITHUB_OUTPUT  
         
