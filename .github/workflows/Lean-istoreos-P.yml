@@ -379,51 +379,52 @@
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
           echo "{url}={$(cat wetransfer.log | grep https | cut -f3 -d" ")}" >> $GITHUB_OUTPUT
 
-      - name: Generate release tag
-        id: tag
-        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-        run: |
-          echo "{release_tag}={$(date +"%Y.%m.%d-%H%M")}" >> $GITHUB_OUTPUT
-          touch release.txt
-          [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-          [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-          echo "{status}={success}" >> $GITHUB_OUTPUT
+          - name: 生成发布标签
+          id: tag
+          if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+          run: |
+            # echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+            echo "{release_tag}={$(date +"%Y.%m.%d-%H%M")}" >> $GITHUB_OUTPUT
+            touch release.txt
+            echo "
+            💻 架构: ${{ matrix.ARCHITECTURE }}
 
-      - name: Upload firmware to release
-        uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.status == 'success' && !cancelled()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
-          body_path: release.txt
-          files: ${{ env.FIRMWARE }}/*
+            📂 源码: ${{ env.REPO_URL }}
 
-      # - name: Delete workflow runs
-        # uses: Mattraks/delete-workflow-runs@v2
-        # with:
-          # retain_days: 30
-          # keep_minimum_runs: 6
+            🌳 分支: ${{ matrix.REPO_BRANCH }}
 
-      # - name: Remove old Releases
-        # uses: dev-drprasad/delete-older-releases@v0.3.2
-        # if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-        # with:
-          # keep_latest: 3
-          # delete_tags: true
-        # env:
-          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            ⏱️ 编译时间: $(date +"%Y年%m月%d日%H时%M分")
 
-      - name: 删除运行记录
-        uses: Mattraks/delete-workflow-runs@v2
-        with:
-          retain_days: 10     #保留最后多少记录不删除
-          keep_minimum_runs: 3
+            🌐 管理地址: 10.0.0.1
 
-      - name: 删除自动发布的旧固件
-        uses: dev-drprasad/delete-older-releases@v0.3.2
-        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
-        with:
-          keep_latest: 30        #保留多少个releases不删除
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            👤 用户名: root
+
+            🔒 密码: password " >> release.txt
+            [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
+            [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
+            echo "status=success" >> $GITHUB_OUTPUT
+
+        - name: 自动发布固件到 Releases
+          uses: softprops/action-gh-release@v1
+          if: steps.tag.outputs.status == 'success' && !cancelled()
+          env:
+            GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+          with:
+            tag_name: ${{ steps.tag.outputs.release_tag }}
+            body_path: release.txt
+            files: ${{ env.FIRMWARE }}/*
+
+        - name: 删除运行记录
+          uses: GitRML/delete-workflow-runs@main
+          with:
+            retain_days: 10
+            keep_minimum_runs: 3
+
+        - name: 删除自动发布的旧固件
+          uses: dev-drprasad/delete-older-releases@v0.3.2
+          if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+          with:
+            keep_latest: 3
+            delete_tags: true
+          env:
+            GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
