@@ -51,7 +51,7 @@ jobs:
      
     name: Deliver config  OpenWrt-CI
     
-    if: github.event.repository.owner.id == github.event.sender.id
+    # if: github.event.repository.owner.id == github.event.sender.id
     
     runs-on: ubuntu-latest
 
