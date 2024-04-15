@@ -211,8 +211,7 @@ jobs:
 
       - name: 整理固件文件
         id: organize
-        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
-        run: |
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()        run: |
           cd openwrt/bin/targets/*/*
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
