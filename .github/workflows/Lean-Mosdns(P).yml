@@ -123,10 +123,18 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      - name: 缓存
-        uses: klever1988/cachewrtbuild@main
+      # - name: 缓存
+      #   uses: klever1988/cachewrtbuild@main
+      #   with:
+      #     ccache: 'true'
+      #     prefix: ${{ github.workspace }}/openwrt
+
+      - name: Cache
+        uses: stupidloud/cachewrtbuild@main
         with:
           ccache: 'true'
+          mixkey: ${{ matrix.target }}
+          clean: ${{ contains(github.event.action, 'nocache') }}
           prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
@@ -214,6 +222,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}   
 
       - name: Compile firmware
+        id: compile
         run: |
           cd openwrt
           echo -e "$(nproc) thread compile"
@@ -233,7 +242,7 @@ jobs:
 
       - name: 整理固件文件
         id: organize
-        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt/bin/targets/*/*
           rm -rf packages
@@ -241,6 +250,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
           
       - name: Prepare artifact
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt
           mkdir -p ./artifact/firmware
