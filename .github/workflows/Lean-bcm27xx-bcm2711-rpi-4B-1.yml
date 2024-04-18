@@ -49,7 +49,7 @@ jobs:
   build_openwrt:
 
         
-    name: Deliver config  OpenWrt-CI
+    name: Lean-bcm27xx-bcm2711-rpi-4-1
         
     # if: github.event.repository.owner.id == github.event.sender.id
         
