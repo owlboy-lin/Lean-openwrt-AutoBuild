@@ -242,7 +242,7 @@ jobs:
 
       - name: Compile firmware
         id: compile
-        if: steps.package.outputs.status == 'success' && !cancelled()
+        if: cancelled()
         run: |
           cd openwrt
           echo -e "$(nproc) thread compile"
