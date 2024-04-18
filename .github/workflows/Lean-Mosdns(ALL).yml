@@ -327,7 +327,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载 ${{ env.name }}
+          name: ${{ steps.tag.outputs.release_date }} X86_64-固件下载-Lean-Mosdns(ALL) ${{ env.name }}
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
