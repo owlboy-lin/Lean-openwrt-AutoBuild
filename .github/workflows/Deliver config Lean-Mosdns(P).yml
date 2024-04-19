@@ -118,13 +118,6 @@ jobs:
           START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
           echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
 
-      - name: Cache
-        uses: stupidloud/cachewrtbuild@main
-        with:
-          ccache: 'true'
-          mixkey: ${{ matrix.target }}
-          clean: ${{ contains(github.event.action, 'nocache') }}
-          prefix: ${{ github.workspace }}/openwrt
          
       - name: 下载源代码
         working-directory: /workdir
@@ -132,6 +125,14 @@ jobs:
           df -hT $PWD
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
+      - name: Cache
+        uses: stupidloud/cachewrtbuild@main
+        with:
+          ccache: 'true'
+          mixkey: ${{ matrix.target }}
+          clean: ${{ contains(github.event.action, 'nocache') }}
+          prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
         run: |
