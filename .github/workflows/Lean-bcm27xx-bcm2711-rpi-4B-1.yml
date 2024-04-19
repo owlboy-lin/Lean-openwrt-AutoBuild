@@ -121,14 +121,14 @@ jobs:
           clean: ${{ contains(github.event.action, 'nocache') }}
           prefix: ${{ github.workspace }}/openwrt
             
-      - name: Free up disk space
-        env:
-          DEBIAN_FRONTEND: noninteractive
-        run: |
-          sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/bin /mnt/openwrt/staging_dir
-          ln -sf /mnt/openwrt/dl openwrt/dl
-          ln -sf /mnt/openwrt/bin openwrt/bin
-          ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
+      # - name: Free up disk space
+      #   env:
+      #     DEBIAN_FRONTEND: noninteractive
+      #   run: |
+      #     sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/bin /mnt/openwrt/staging_dir
+      #     ln -sf /mnt/openwrt/dl openwrt/dl
+      #     ln -sf /mnt/openwrt/bin openwrt/bin
+      #     ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
 
       - name: patch1补丁和自定义设置
         run: |
