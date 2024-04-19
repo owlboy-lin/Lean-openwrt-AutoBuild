@@ -57,20 +57,20 @@ jobs:
 
 
     steps:
-      - name: CPU检测
-        run: |
-          echo "警告⚠"
-          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
-          echo -e "已知CPU型号(降序): 7763，8370C，8272CL，8171M，E5-2673\n"
-          echo "--------------------------CPU信息--------------------------"
-          echo "CPU物理数量: $(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
-          echo "CPU核心数量: $(nproc)"
-          echo -e "CPU型号信息:$(cat /proc/cpuinfo | grep -m1 name | awk -F: '{print $2}')\n"
-          echo "--------------------------内存信息--------------------------"
-          echo "已安装内存详细信息:"
-          echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
-          echo "--------------------------硬盘信息--------------------------"
-          echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
+      # - name: CPU检测
+      #   run: |
+      #     echo "警告⚠"
+      #     echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+      #     echo -e "已知CPU型号(降序): 7763，8370C，8272CL，8171M，E5-2673\n"
+      #     echo "--------------------------CPU信息--------------------------"
+      #     echo "CPU物理数量: $(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
+      #     echo "CPU核心数量: $(nproc)"
+      #     echo -e "CPU型号信息:$(cat /proc/cpuinfo | grep -m1 name | awk -F: '{print $2}')\n"
+      #     echo "--------------------------内存信息--------------------------"
+      #     echo "已安装内存详细信息:"
+      #     echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
+      #     echo "--------------------------硬盘信息--------------------------"
+      #     echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
 
       - name: 准备完成
         uses: actions/checkout@v4
@@ -131,28 +131,29 @@ jobs:
       #     ln -sf /mnt/openwrt/bin openwrt/bin
       #     ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
 
-      - name: patch1补丁和自定义设置
+      - name: Update feeds
+        working-directory: ./openwrt
         run: |
-          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-          chmod +x $DIY_P1_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P1_SH
+          # sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          ./scripts/feeds install -a
 
-
-      - name: 更新源 #Update feeds
-        run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
-
-      - name: 安装源 #Install feeds
-        run: cd openwrt && ./scripts/feeds install -a
-
-
-      - name: patch2补丁和自定义设置
+      - name: Custom script
         run: |
-          [ -e files ] && mv files openwrt/files
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          chmod +x $DIY_P2_SH
+          mv rpi-4B/rpi-4B.sh openwrt/rpi-4B.sh
           cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P2_SH
+          chmod +x ./rpi-4B.sh && ./rpi-4B.sh
+
+      - name: Costom configure file
+        env:
+          CONFIG_FILE: 'rpi-4B/config.rpi-4B'
+        run: |
+          rm -f openwrt/.config*
+          mv $CONFIG_FILE openwrt/.config
+          cd openwrt
+          sed -i 's/^[ \t]*//g' ./.config
+          make defconfig
 
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
@@ -165,7 +166,6 @@ jobs:
         id: package
         run: |
           cd openwrt
-          make defconfig
           make download -j$(($(nproc)+1))
           # find dl -size -1024c -exec ls -l {} \;
           # find dl -size -1024c -exec rm -f {} \;
