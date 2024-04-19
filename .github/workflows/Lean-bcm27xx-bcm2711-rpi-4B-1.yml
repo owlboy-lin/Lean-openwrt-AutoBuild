@@ -165,18 +165,18 @@ jobs:
         run: |
           cd openwrt
           make defconfig
-          make download -j8
+          make download -j$(($(nproc)+1))
           find dl -size -1024c -exec ls -l {} \;
           find dl -size -1024c -exec rm -f {} \;
 
-      - name: Check space usage
-        run: |
-          shopt -s extglob
-          cd openwrt
-          if [[ -f staging_dir/*${{ env.MTARGET }}*/bin ]]; then
-              rm -rf staging_dir/!(*${{ env.MTARGET }}*|host|hostpkg) build_dir/!(*${{ env.MTARGET }}*|host|hostpkg)
-          fi
-          df -hT  
+      # - name: Check space usage
+      #   run: |
+      #     shopt -s extglob
+      #     cd openwrt
+      #     if [[ -f staging_dir/*${{ env.MTARGET }}*/bin ]]; then
+      #         rm -rf staging_dir/!(*${{ env.MTARGET }}*|host|hostpkg) build_dir/!(*${{ env.MTARGET }}*|host|hostpkg)
+      #     fi
+      #     df -hT  
 
       - name: 输出编译信息
         run: |
