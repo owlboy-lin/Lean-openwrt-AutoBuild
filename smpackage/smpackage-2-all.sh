@@ -110,19 +110,6 @@ CONFIG_TARGET_ROOTFS_PARTSIZE=512
 # ipv6
 CONFIG_PACKAGE_ipv6helper=y
 
-# CONFIG_DEFAULT_luci-app-accesscontrol=y
-# CONFIG_DEFAULT_luci-app-arpbind=y
-# CONFIG_DEFAULT_luci-app-autoreboot=y
-# CONFIG_DEFAULT_luci-app-ddns=y
-# CONFIG_DEFAULT_luci-app-filetransfer=y
-# CONFIG_DEFAULT_luci-app-nlbwmon=y
-# CONFIG_DEFAULT_luci-app-ssr-plus=y
-# CONFIG_DEFAULT_luci-app-turboacc=y
-# CONFIG_DEFAULT_luci-app-upnp=y
-# CONFIG_DEFAULT_luci-app-vlmcsd=y
-# CONFIG_DEFAULT_luci-app-vsftpd=y
-# CONFIG_DEFAULT_luci-app-wol=y
-
 
 # airplay2
 CONFIG_PACKAGE_luci-app-airplay2=y
@@ -201,8 +188,8 @@ CONFIG_PACKAGE_luci-app-webadmin=y
 CONFIG_PACKAGE_luci-i18n-webadmin-zh-cn=y
 
 # rclone
-# CONFIG_PACKAGE_rclone=y
-# CONFIG_PACKAGE_fuse3-utils=y
+CONFIG_PACKAGE_rclone=y
+CONFIG_PACKAGE_fuse3-utils=y
 
 # 删除不用的插件
 CONFIG_PACKAGE_autosamba=y
