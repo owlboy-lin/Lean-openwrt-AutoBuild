@@ -147,7 +147,7 @@ jobs:
 
       - name: Costom configure file
         env:
-          CONFIG_FILE: 'rpi-4B/config.rpi-4B'
+          CONFIG_FILE: rpi-4B/config.rpi-4B
         run: |
           rm -f openwrt/.config*
           mv $CONFIG_FILE openwrt/.config
