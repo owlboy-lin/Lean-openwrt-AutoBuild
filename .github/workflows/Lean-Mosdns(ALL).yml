@@ -44,6 +44,7 @@ env:
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
+  GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
   TZ: Asia/Shanghai 
 
 jobs:
@@ -349,4 +350,4 @@ jobs:
           keep_latest: 20        #保留多少个releases不删除
           delete_tags: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
