@@ -1,6 +1,3 @@
-# CONFIG_KERNEL_BUILD_USER="Rhys Xia"
-# CONFIG_GRUB_TITLE="Build by Rhys Xia"
-
 # 编译固件:
 CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y
 CONFIG_HAS_SUBTARGETS=y
