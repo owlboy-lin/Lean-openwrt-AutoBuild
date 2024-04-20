@@ -74,17 +74,6 @@ CONFIG_TARGET_bcm27xx=y
 CONFIG_TARGET_bcm27xx_bcm2711=y
 CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y
 
-
-# 编译固件压缩
-CONFIG_TARGET_IMAGES_GZIP=y
-
-# 固件大小
-CONFIG_TARGET_KERNEL_PARTSIZE=64
-CONFIG_TARGET_ROOTFS_PARTSIZE=160
-
-# ipv6
-CONFIG_PACKAGE_ipv6helper=y
-
 " >> .config
 
 # 移除 ddns 和 ddnsto
