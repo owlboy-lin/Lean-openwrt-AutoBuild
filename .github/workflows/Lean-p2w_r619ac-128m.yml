@@ -69,6 +69,19 @@ env:
   
   
       steps:
+        - name: Free Disk Space
+          uses: endersonmenezes/free-disk-space@v2
+          with:
+            remove_android: true
+            remove_dotnet: true
+            remove_haskell: true
+            remove_tool_cache: true
+            remove_swap: true
+            remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
+            remove_packages_one_command: true
+            remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
+            testing: false
+
         # - name: CPU检测
         #   run: |
         #     echo "警告⚠"
@@ -125,14 +138,14 @@ env:
             df -hT $PWD
             git clone $REPO_URL -b $REPO_BRANCH openwrt
             ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
-  
-        # - name: Cache
-        #   uses: stupidloud/cachewrtbuild@main
-        #   with:
-        #     ccache: 'true'
-        #     mixkey: ${{ matrix.target }}
-        #     clean: ${{ contains(github.event.action, 'nocache') }}
-        #     prefix: ${{ github.workspace }}/openwrt
+
+        - name: 缓存
+          uses: klever1988/cachewrtbuild@main
+          if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
+          with:
+            ccache: 'true'
+            mixkey: 'Lean-p2w_r619ac-128m'
+            prefix: ${{ github.workspace }}/openwrt
               
         # - name: Free up disk space
         #   env:
@@ -157,13 +170,16 @@ env:
           env:
             TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
             TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
-  
-        - name: Update feeds
-          working-directory: ./openwrt
-          run: |
-            ./scripts/feeds update -a
-            ./scripts/feeds install -a
-            ./scripts/feeds install -a
+
+
+        - name: 更新源 #Update feeds
+          if: (!cancelled())
+          run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
+
+        - name: 安装源 #Install feeds
+          if: (!cancelled())
+          run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
+
   
         # - name: Custom script
         #   run: |
