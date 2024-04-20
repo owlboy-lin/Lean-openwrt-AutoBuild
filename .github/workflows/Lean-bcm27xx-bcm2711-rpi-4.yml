@@ -95,11 +95,11 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      - name: 缓存
-        uses: klever1988/cachewrtbuild@main
-        with:
-          ccache: 'true'
-          prefix: ${{ github.workspace }}/openwrt
+      # - name: 缓存
+      #   uses: klever1988/cachewrtbuild@main
+      #   with:
+      #     ccache: 'true'
+      #     prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
         run: |
@@ -174,7 +174,7 @@ jobs:
         run: |
           cd openwrt
           make defconfig
-          make download -j16
+          make download -j$(($(nproc)+1))
           # find dl -size -1024c -exec ls -l {} \;
           # find dl -size -1024c -exec rm -f {} \;
         
