@@ -306,6 +306,13 @@ jobs:
         if: cancelled()
         run: df -hT
 
+      - name: SSH connection to Actions
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
+
       - name: 整理固件文件
         id: organize
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_ORGANIZE == 'true' && !cancelled()
@@ -379,7 +386,7 @@ jobs:
       - name: 获取内核版本号
         run: |
           cd openwrt/bin/targets/*/*
-          KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m*.bin | awk '{print $9}' | cut -d '-' -f1)
+          KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m.bin | awk '{print $9}' | cut -d '-' -f1)
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
       - name: 生成发布标签
