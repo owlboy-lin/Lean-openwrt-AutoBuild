@@ -21,6 +21,13 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
+
+      CACHE_BUILD:
+        description: '缓存加速'
+        required: false
+        default: 'true'
+        type: boolean
+
   watch:
     types: [started]
     
@@ -38,7 +45,7 @@ env:
   Firmware_Name: Lean-Mosdns-netspeed-uugame-netdate-ALL
   DIY_P1_SH: smpackage/smpackage-1-p.sh
   DIY_P2_SH: smpackage/smpackage-2-all.sh
-  UPLOAD_ORGANIZE: false
+  UPLOAD_ORGANIZE: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -57,20 +64,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - name: 释放Ubuntu磁盘空间
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
-          # all of these default to true, but feel free to set to
-          # "false" if necessary for your workflow
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          swap-storage: true 
-      
       - name: CPU检测
         run: |
           echo "警告⚠"
@@ -85,10 +78,6 @@ jobs:
           echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
           echo "--------------------------硬盘信息--------------------------"
           echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
-
-      - name: 准备完成
-        uses: actions/checkout@v4
-        
          
       - name: 初始化系统环境
         env:
@@ -116,6 +105,22 @@ jobs:
           START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
           echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
 
+      - name: 释放Ubuntu磁盘空间
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: true 
+
+      - name: 准备完成
+        uses: actions/checkout@v4
 
       - name: 下载源代码
         working-directory: /workdir
@@ -124,10 +129,12 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      - name: 缓存
+      - name: 缓存加速
         uses: klever1988/cachewrtbuild@main
+        if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
         with:
           ccache: 'true'
+          mixkey: 'Lean-Mosdns(ALL)'
           prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
@@ -138,15 +145,13 @@ jobs:
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
-
       - name: 更新源 #Update feeds
         if: (!cancelled())
-        run: cd openwrt && ./scripts/feeds update -a
+        run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
 
       - name: 安装源 #Install feeds
         if: (!cancelled())
-        run: cd openwrt && ./scripts/feeds install -a
-
+        run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
 
       - name: patch2补丁和自定义设置
         if: (!cancelled())
@@ -240,7 +245,7 @@ jobs:
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
 
-      - name: 整理固件文件
+      - name: 整理固件目录
         id: organize
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
@@ -248,7 +253,8 @@ jobs:
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
           
-      - name: Prepare artifact
+      - name: 整理固件文件
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt
           mkdir -p ./artifact/firmware
@@ -260,23 +266,23 @@ jobs:
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
           cp -rf ./.config ./artifact/buildinfo/
           cp -rf ./feeds.conf.default ./artifact/buildinfo/
-          cd ./bin/targets/*/*
-          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "status=success" >> $GITHUB_OUTPUT  
+          # cd ./bin/targets/*/*
+          # echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          # echo "status=success" >> $GITHUB_OUTPUT  
           
-      - name: Upload bin directory
-        uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-        with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: openwrt/bin
+      # - name: Upload bin directory
+      #   uses: actions/upload-artifact@v4
+      #   if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      #   with:
+      #     name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+      #     path: openwrt/bin
 
       - name: Upload firmware directory
         uses: actions/upload-artifact@v4
         if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: ${{ env.FIRMWARE }}/firmware/
+          path: ${{ env.FIRMWARE }}
 
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v4

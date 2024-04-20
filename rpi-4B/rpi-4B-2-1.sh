@@ -98,17 +98,27 @@ svn export https://github.com/kenzok8/openwrt-packages/trunk/v2dat package/v2dat
 # 添加自定义软件包
 
 echo "
+# 编译固件:
+CONFIG_TARGET_bcm27xx=y
+CONFIG_TARGET_bcm27xx_bcm2711=y
+CONFIG_TARGET_bcm27xx_bcm2711_DEVICE_rpi-4=y
 
-# 额外组件
-CONFIG_GRUB_IMAGES=y
-CONFIG_VMDK_IMAGES=y
+
+# 编译固件压缩
+CONFIG_TARGET_IMAGES_GZIP=y
 
 # 固件大小
-CONFIG_TARGET_KERNEL_PARTSIZE=256
-CONFIG_TARGET_ROOTFS_PARTSIZE=512
+CONFIG_TARGET_KERNEL_PARTSIZE=64
+CONFIG_TARGET_ROOTFS_PARTSIZE=160
 
 # ipv6
 CONFIG_PACKAGE_ipv6helper=y
+
+
+# airplay2
+CONFIG_PACKAGE_luci-app-airplay2 is not set
+CONFIG_PACKAGE_luci-i18n-airplay2-zh-cn is not set
+
 
 # 自动重启
 CONFIG_PACKAGE_luci-app-autoreboot=y
@@ -131,6 +141,7 @@ CONFIG_PACKAGE_luci-i18n-openclash-zh-cn=y
 
 # adguardhome
 CONFIG_PACKAGE_luci-app-adguardhome=y
+CONFIG_PACKAGE_luci-app-adguardhome_INCLUDE_binary=y
 CONFIG_PACKAGE_luci-i18n-adguardhome-zh-cn=y
 
 # mosdns
@@ -166,6 +177,11 @@ CONFIG_PACKAGE_luci-app-store=y
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-i18n-ttyd-zh-cn=y
 
+CONFIG_PACKAGE_luci-app-unblockmusic=y
+CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_Go=y
+CONFIG_PACKAGE_luci-app-unblockmusic_INCLUDE_UnblockNeteaseMusic_NodeJS=y
+CONFIG_PACKAGE_luci-i18n-unblockmusic-zh-cn=y
+
 # luci-app-uugamebooster=y
 CONFIG_PACKAGE_luci-app-uugamebooster=y
 CONFIG_PACKAGE_luci-i18n-uugamebooster-zh-cn=y
@@ -176,21 +192,21 @@ CONFIG_PACKAGE_luci-app-webadmin=y
 CONFIG_PACKAGE_luci-i18n-webadmin-zh-cn=y
 
 # rclone
-# CONFIG_PACKAGE_rclone=y
-# CONFIG_PACKAGE_fuse3-utils=y
+CONFIG_PACKAGE_rclone=y
+CONFIG_PACKAGE_fuse3-utils=y
 
 # 删除不用的插件
-# # CONFIG_PACKAGE_autosamba is not set
-# # CONFIG_PACKAGE_luci-app-accesscontrol is not set
-# # CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-upnp is not set
-# # CONFIG_PACKAGE_luci-i18n-upnp-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-vlmcsd is not set
-# # CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-vsftpd is not set
-# # CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn is not set
-# # CONFIG_PACKAGE_luci-app-samba4 is not set
-# # CONFIG_PACKAGE_luci-i18n-samba4-zh-cn is not set
+CONFIG_PACKAGE_autosamba=y
+CONFIG_PACKAGE_luci-app-accesscontrol=y
+CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn=y
+CONFIG_PACKAGE_luci-app-upnp=y
+CONFIG_PACKAGE_luci-i18n-upnp-zh-cn=y
+CONFIG_PACKAGE_luci-app-vlmcsd=y
+CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn=y
+CONFIG_PACKAGE_luci-app-vsftpd=y
+CONFIG_PACKAGE_luci-i18n-vsftpd-zh-cn=y
+CONFIG_PACKAGE_luci-app-samba4=y
+CONFIG_PACKAGE_luci-i18n-samba4-zh-cn=y
 
 " >> .config
 

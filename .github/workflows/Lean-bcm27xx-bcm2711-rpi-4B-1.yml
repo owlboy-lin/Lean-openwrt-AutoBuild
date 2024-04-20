@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Lean-bcm27xx-bcm2711-rpi-4-1
+name: Lean-bcm27xx-bcm2711-rpi-4B-1
 
 on:
 #  schedule:
@@ -32,16 +32,18 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: Lean-bcm27xx-bcm2711-rpi-4.info
-  Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4
-  DIY_P1_SH: diy-part1.sh
-  DIY_P2_SH: diy-part2.sh
-  UPLOAD_BIN_DIR: false
+  CONFIG_FILE: rpi-4B/Lean-bcm27xx-bcm2711-rpi-4.info
+  Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4B
+  DIY_P1_SH: rpi-4B/rpi-4B-1.sh
+  DIY_P2_SH: rpi-4B/rpi-4B-2.sh
+  UPLOAD_ORGANIZE: true
+  UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: false
-  TZ: Asia/Shanghai
+  UPLOAD_RELEASE: true
+  GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
+  TZ: Asia/Shanghai 
 
 jobs:
 
@@ -49,7 +51,7 @@ jobs:
   build_openwrt:
 
         
-    name: Lean-bcm27xx-bcm2711-rpi-4-1
+    name: Lean-bcm27xx-bcm2711-rpi-4B-1
         
     # if: github.event.repository.owner.id == github.event.sender.id
         
@@ -72,9 +74,7 @@ jobs:
       #     echo "--------------------------硬盘信息--------------------------"
       #     echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
 
-      - name: 准备完成
-        uses: actions/checkout@v4
-            
+           
       - name: 初始化系统环境
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -93,7 +93,7 @@ jobs:
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir 
 
-            
+          
       - name: 更新时区、编译时间
         id: date
         run: |
@@ -105,7 +105,9 @@ jobs:
           echo "编译开始时间..."
           START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
           echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
-            
+
+      - name: 准备完成
+        uses: actions/checkout@v4
            
       - name: 下载源代码
         working-directory: /workdir
@@ -114,13 +116,13 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      - name: Cache
-        uses: stupidloud/cachewrtbuild@main
-        with:
-          ccache: 'true'
-          mixkey: ${{ matrix.target }}
-          clean: ${{ contains(github.event.action, 'nocache') }}
-          prefix: ${{ github.workspace }}/openwrt
+      # - name: Cache
+      #   uses: stupidloud/cachewrtbuild@main
+      #   with:
+      #     ccache: 'true'
+      #     mixkey: ${{ matrix.target }}
+      #     clean: ${{ contains(github.event.action, 'nocache') }}
+      #     prefix: ${{ github.workspace }}/openwrt
             
       # - name: Free up disk space
       #   env:
@@ -131,28 +133,52 @@ jobs:
       #     ln -sf /mnt/openwrt/bin openwrt/bin
       #     ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
 
+      - name: patch1补丁和自定义设置
+        if: (!cancelled())
+        run: |
+          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+          chmod +x $DIY_P1_SH
+          cd openwrt
+          $GITHUB_WORKSPACE/$DIY_P1_SH
+
+      - name: SSH connection to Actions
+        uses: P3TERX/ssh2actions@v1.0.0
+        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+        env:
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
+
       - name: Update feeds
         working-directory: ./openwrt
         run: |
-          # sed -i '$a src-git smpackage https://github.com/kenzok8/small-package' feeds.conf.default
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           ./scripts/feeds install -a
 
-      - name: Custom script
-        run: |
-          mv rpi-4B/rpi-4B.sh openwrt/rpi-4B.sh
-          cd openwrt
-          chmod +x ./rpi-4B.sh && ./rpi-4B.sh
+      # - name: Custom script
+      #   run: |
+      #     mv rpi-4B/rpi-4B.sh openwrt/rpi-4B.sh
+      #     cd openwrt
+      #     chmod +x ./rpi-4B.sh && ./rpi-4B.sh
 
-      - name: Costom configure file
-        env:
-          CONFIG_FILE: rpi-4B/config.rpi-4B
+      # - name: Costom configure file
+      #   env:
+      #     CONFIG_FILE: rpi-4B/config.rpi-4B
+      #   run: |
+      #     rm -f openwrt/.config*
+      #     mv $CONFIG_FILE openwrt/.config
+      #     cd openwrt
+      #     sed -i 's/^[ \t]*//g' ./.config
+      #     make defconfig
+
+      - name: patch2补丁和自定义设置
+        if: (!cancelled())
         run: |
-          rm -f openwrt/.config*
-          mv $CONFIG_FILE openwrt/.config
+          [ -e files ] && mv files openwrt/files
+          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+          chmod +x $DIY_P2_SH
           cd openwrt
-          sed -i 's/^[ \t]*//g' ./.config
+          $GITHUB_WORKSPACE/$DIY_P2_SH
           make defconfig
 
       - name: SSH connection to Actions
@@ -179,50 +205,50 @@ jobs:
       #     fi
       #     df -hT  
 
-      - name: 输出编译信息
-        run: |
-          cd openwrt
-          echo " 系统空间      类型   总数  已用  可用 使用率"
-          df -hT $PWD
+      # - name: 输出编译信息
+      #   run: |
+      #     cd openwrt
+      #     echo " 系统空间      类型   总数  已用  可用 使用率"
+      #     df -hT $PWD
            
-          echo
-          echo "=========================================="
-          echo
+      #     echo
+      #     echo "=========================================="
+      #     echo
 
-          ZZZ="package/lean/default-settings/files/zzz-default-settings"
-          echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
-          echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
-          echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
-          echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
+      #     ZZZ="package/lean/default-settings/files/zzz-default-settings"
+      #     echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
+      #     echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
+      #     echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
+      #     echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
 
-          echo
-          echo "=========================================="
+      #     echo
+      #     echo "=========================================="
 
-          grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
-          grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
-          sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
-          sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
-          sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
-          sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
-          sed -i 's/=y/\ /g' Plug-in
-          awk '$0=NR$0' Plug-in > Plug-2
-          awk '{print "	" $0}' Plug-2 > Plug-in
+      #     grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
+      #     grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
+      #     sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
+      #     sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
+      #     sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
+      #     sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
+      #     sed -i 's/=y/\ /g' Plug-in
+      #     awk '$0=NR$0' Plug-in > Plug-2
+      #     awk '{print "	" $0}' Plug-2 > Plug-in
 
-          echo
-          echo
-          echo "	      已选插件列表"
-          cat Plug-in
-          rm -rf {Plug-in,Plug-2}
+      #     echo
+      #     echo
+      #     echo "	      已选插件列表"
+      #     cat Plug-in
+      #     rm -rf {Plug-in,Plug-2}
 
-          echo
-          echo "=========================================="
+      #     echo
+      #     echo "=========================================="
 
-          echo
-          echo
-          echo "输出完整插件信息..."
-          echo
-          echo
-          cat .config
+      #     echo
+      #     echo
+      #     echo "输出完整插件信息..."
+      #     echo
+      #     echo
+      #     cat .config
         
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
@@ -325,37 +351,62 @@ jobs:
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
           echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
 
-      - name: Generate release tag
-        id: tag
-        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      - name: 获取内核版本号
         run: |
-          echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
-          touch release.txt
-          [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-          [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-          echo "::set-output name=status::success"
+          cd openwrt/bin/targets/x86/64
+          KERNEL_VERSION=$(ls -l *openwrt-x86-64-generic-kernel.bin | awk '{print $9}' | cut -d '-' -f1)
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
-      - name: Upload firmware to release
-        uses: softprops/action-gh-release@v1
-        if: steps.tag.outputs.status == 'success' && !cancelled()
+      - name: 生成发布标签
+        id: tag
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+        run: |
+          echo "release_tag=$(date +"%Y.%m.%d")-Lean-bcm27xx-bcm2711-rpi-4B-1" >> $GITHUB_OUTPUT
+          echo "release_date=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
+          touch release.txt
+          echo "
+          ★ 源码 : https://github.com/coolsnowwolf/lede
+          ★ 分支 : master
+          ★ 感谢源码作者无私分享！
+          
+          ⏰ 编译时间：${{ env.FILE_TIME1 }}
+          
+          🎈 内核版本：${{ env.KERNEL_PATCHVER }}
+          
+          🎉 编译版本：${{ env.DISTRIB_REVISION }}
+          
+          🖥 管理地址：192.168.1.1 
+          
+          🌴 名称：root
+          
+          🛠 密码：password" >> release.txt
+          echo "status=success" >> $GITHUB_OUTPUT
+      
+      - name: 自动发布固件到 Releases
+        uses: softprops/action-gh-release@v2
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
+          name: ${{ steps.tag.outputs.release_date }} Lean-bcm27xx-bcm2711-rpi-4B-1 ${{ env.name }}
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
 
-      - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
+      - name: 删除运行记录
+        uses: Mattraks/delete-workflow-runs@v2
+        if: steps.compile.outputs.status == 'success' && !cancelled()
+        continue-on-error: true
         with:
-          retain_days: 30
-          keep_minimum_runs: 6
+          retain_days: 3     #保留最后多少记录不删除
+          keep_minimum_runs: 0
 
-      - name: Remove old Releases
-        uses: dev-drprasad/delete-older-releases@v0.1.0
-        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      - name: 删除自动发布的旧固件
+        uses: dev-drprasad/delete-older-releases@v0.3.3
+        continue-on-error: true
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
-          keep_latest: 3
+          keep_latest: 20        #保留多少个releases不删除
           delete_tags: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
