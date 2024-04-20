@@ -174,9 +174,9 @@ jobs:
         run: |
           cd openwrt
           make defconfig
-          make download -j$(($(nproc)+1))
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
+          make download -j16
+          # find dl -size -1024c -exec ls -l {} \;
+          # find dl -size -1024c -exec rm -f {} \;
         
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
@@ -191,7 +191,7 @@ jobs:
         run: |
           cd openwrt
           echo -e "$(nproc) thread compile"
-          make -j$(nproc) || make -j1 || make -j1 V=s
+          make -j$(nproc) || make -j1 V=s
           echo "======================="
           echo "Space usage:"
           echo "======================="
