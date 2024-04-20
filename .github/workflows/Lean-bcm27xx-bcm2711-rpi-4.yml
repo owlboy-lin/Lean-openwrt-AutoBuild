@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Lean-bcm27xx-bcm2711-rpi-4
+name: Lean-bcm27xx-bcm2711-rpi-4B
 
 on:
 #  schedule:
@@ -33,7 +33,7 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: Lean-bcm27xx-bcm2711-rpi-4.info
-  Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4
+  Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4B
   DIY_P1_SH: OpenWrt-CI-diy/OpenWrt-CI-diy-1.sh
   DIY_P2_SH: OpenWrt-CI-diy/OpenWrt-CI-diy-2.sh
   UPLOAD_BIN_DIR: false
@@ -46,9 +46,9 @@ env:
 jobs:
   build_openwrt:
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     
-    name: Lean-bcm27xx-bcm2711-rpi-4
+    name: Lean-bcm27xx-bcm2711-rpi-4B
 
     steps:
       - name: 初始化系统环境
@@ -283,37 +283,62 @@ jobs:
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
           echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
 
-      - name: Generate release tag
-        id: tag
-        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      - name: 获取内核版本号
         run: |
-          echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
-          touch release.txt
-          [ $UPLOAD_COWTRANSFER = true ] && echo "🔗 [Cowtransfer](${{ steps.cowtransfer.outputs.url }})" >> release.txt
-          [ $UPLOAD_WETRANSFER = true ] && echo "🔗 [WeTransfer](${{ steps.wetransfer.outputs.url }})" >> release.txt
-          echo "::set-output name=status::success"
+          cd openwrt/bin/targets/x86/64
+          KERNEL_VERSION=$(ls -l *openwrt-x86-64-generic-kernel.bin | awk '{print $9}' | cut -d '-' -f1)
+          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
-      - name: Upload firmware to release
+      - name: 生成发布标签
+        id: tag
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+        run: |
+          echo "release_tag=$(date +"%Y.%m.%d")-Lean-bcm27xx-bcm2711-rpi-4B" >> $GITHUB_OUTPUT
+          echo "release_date=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
+          touch release.txt
+          echo "
+          ★ 源码 : https://github.com/coolsnowwolf/lede
+          ★ 分支 : master
+          ★ 感谢源码作者无私分享！
+          
+          ⏰ 编译时间：${{ env.FILE_TIME1 }}
+          
+          🎈 内核版本：${{ env.KERNEL_PATCHVER }}
+          
+          🎉 编译版本：${{ env.DISTRIB_REVISION }}
+          
+          🖥 管理地址：192.168.1.1 
+          
+          🌴 名称：root
+          
+          🛠 密码：password" >> release.txt
+          echo "status=success" >> $GITHUB_OUTPUT
+      
+      - name: 自动发布固件到 Releases
         uses: softprops/action-gh-release@v2
-        if: steps.tag.outputs.status == 'success' && !cancelled()
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
+          name: ${{ steps.tag.outputs.release_date }} Lean-bcm27xx-bcm2711-rpi-4B ${{ env.name }}
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
 
-      - name: Delete workflow runs
-        uses: GitRML/delete-workflow-runs@main
+      - name: 删除运行记录
+        uses: Mattraks/delete-workflow-runs@v2
+        if: steps.compile.outputs.status == 'success' && !cancelled()
+        continue-on-error: true
         with:
-          retain_days: 30
-          keep_minimum_runs: 6
+          retain_days: 3     #保留最后多少记录不删除
+          keep_minimum_runs: 0
 
-      - name: Remove old Releases
+      - name: 删除自动发布的旧固件
         uses: dev-drprasad/delete-older-releases@v0.3.3
-        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+        continue-on-error: true
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
-          keep_latest: 3
+          keep_latest: 20        #保留多少个releases不删除
           delete_tags: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
