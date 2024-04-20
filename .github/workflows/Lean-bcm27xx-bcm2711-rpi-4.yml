@@ -95,7 +95,7 @@ jobs:
           sudo timedatectl set-timezone "$TZ"
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir
-          # df -Th
+          df -Th
 
       - name: 更新时区、编译时间
         id: date
