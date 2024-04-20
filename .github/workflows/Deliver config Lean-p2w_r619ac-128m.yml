@@ -40,7 +40,7 @@ env:
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: rpi-4B/Lean-bcm27xx-bcm2711-rpi-4B.info
-  Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4B
+  Firmware_Name: Lean-p2w_r619ac-128m
   DIY_P1_SH: rpi-4B/rpi-4B-1.sh
   DIY_P2_SH: rpi-4B/rpi-4B-2.sh
   UPLOAD_ORGANIZE: true
@@ -204,7 +204,7 @@ jobs:
         id: tag
         if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "release_tag=$(date +"%Y.%m.%d.%H.%M")-编译信息-Lean-bcm27xx-bcm2711-rpi-4B.info" >> $GITHUB_OUTPUT
+          echo "release_tag=$(date +"%Y.%m.%d.%H.%M")-编译信息-Lean-p2w_r619ac-128m.info" >> $GITHUB_OUTPUT
           echo "release_date=$(date +"%Y.%m.%d.%H.%M")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "
@@ -212,7 +212,7 @@ jobs:
           ★ 分支 : master
           ★ 感谢源码作者无私分享！
           
-          输出编译信息 Lean-bcm27xx-bcm2711-rpi-4B" >> release.txt
+          输出编译信息 Lean-p2w_r619ac-128m" >> release.txt
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: 自动发布固件到 Releases
@@ -221,7 +221,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} 编译信息 Lean-bcm27xx-bcm2711-rpi-4B 
+          name: ${{ steps.tag.outputs.release_date }} 编译信息 Lean-p2w_r619ac-128m 
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
