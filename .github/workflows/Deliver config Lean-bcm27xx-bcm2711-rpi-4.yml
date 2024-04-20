@@ -161,16 +161,7 @@ jobs:
           chmod +x $DIY_P2_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
-
-   
-      - name: 下载固件包
-        id: package
-        run: |
-          cd openwrt
           make defconfig
-          make download -j$(($(nproc)+1))
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
         
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
