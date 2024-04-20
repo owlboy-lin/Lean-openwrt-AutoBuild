@@ -179,9 +179,9 @@ jobs:
         run: |
           cd openwrt
           mkdir -p ./artifact/buildinfo
-          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
-          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
-          echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          # grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+          # [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+          # echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
           cp -rf ./.config ./artifact/buildinfo/
           cp -rf ./.config ./artifact/buildinfo/${{ env.Firmware_Name }}.info
           cp -rf ./feeds.conf.default ./artifact/buildinfo/
@@ -211,7 +211,7 @@ jobs:
           ★ 分支 : master
           ★ 感谢源码作者无私分享！
           
-          输出编译信息 OpenWrt-CI.info" >> release.txt
+          输出编译信息 Lean-bcm27xx-bcm2711-rpi-4B" >> release.txt
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: 自动发布固件到 Releases

@@ -46,6 +46,7 @@ env:
   Firmware_Name: Lean--p
   DIY_P1_SH: smpackage/smpackage-1-p.sh
   DIY_P2_SH: smpackage/smpackage-2.sh
+  UPLOAD_ORGANIZE: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -138,21 +139,23 @@ jobs:
           prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
+        if: (!cancelled())
         run: |
           [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
           chmod +x $DIY_P1_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
-
       - name: 更新源 #Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
+        if: (!cancelled())
+        run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
 
       - name: 安装源 #Install feeds
-        run: cd openwrt && ./scripts/feeds install -a
-
+        if: (!cancelled())
+        run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
 
       - name: patch2补丁和自定义设置
+        if: (!cancelled())
         run: |
           [ -e files ] && mv files openwrt/files
           [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
