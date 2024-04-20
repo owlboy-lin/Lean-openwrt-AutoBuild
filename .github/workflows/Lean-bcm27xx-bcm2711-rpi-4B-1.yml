@@ -114,13 +114,13 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      - name: Cache
-        uses: stupidloud/cachewrtbuild@main
-        with:
-          ccache: 'true'
-          mixkey: ${{ matrix.target }}
-          clean: ${{ contains(github.event.action, 'nocache') }}
-          prefix: ${{ github.workspace }}/openwrt
+      # - name: Cache
+      #   uses: stupidloud/cachewrtbuild@main
+      #   with:
+      #     ccache: 'true'
+      #     mixkey: ${{ matrix.target }}
+      #     clean: ${{ contains(github.event.action, 'nocache') }}
+      #     prefix: ${{ github.workspace }}/openwrt
             
       # - name: Free up disk space
       #   env:
@@ -177,6 +177,7 @@ jobs:
           chmod +x $DIY_P2_SH
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P2_SH
+          make defconfig
 
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
