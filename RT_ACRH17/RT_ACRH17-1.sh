@@ -56,10 +56,10 @@
 
 #  下载源码
 ## adguardhome
-# git clone https://github.com/rufengsuixing/luci-app-adguardhome package/luci-app-adguardhome
+git clone https://github.com/rufengsuixing/luci-app-adguardhome package/luci-app-adguardhome
 
 ## autoreboot
-git clone https://github.com/f8q8/luci-app-autoreboot package/luci-app-autoreboot
+# git clone https://github.com/f8q8/luci-app-autoreboot package/luci-app-autoreboot
 
 ## mosdns
 echo 'src-git mosdns https://github.com/sbwml/luci-app-mosdns' >>feeds.conf.default
