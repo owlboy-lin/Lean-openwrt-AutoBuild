@@ -28,11 +28,11 @@ on:
         required: false
         default: 'false'
         
-      # CACHE_BUILD:
-      #   description: '缓存加速'
-      #   required: false
-      #   default: 'true'
-      #   type: boolean
+      CACHE_BUILD:
+        description: '缓存加速'
+        required: false
+        default: 'true'
+        type: boolean
 
 
 env:
@@ -129,13 +129,13 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      # - name: 缓存
-      #   uses: klever1988/cachewrtbuild@main
-      #   if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
-      #   with:
-      #     ccache: 'true'
-      #     mixkey: 'Lean-bcm27xx-bcm2711-rpi-4B'
-      #     prefix: ${{ github.workspace }}/openwrt
+      - name: 缓存
+        uses: klever1988/cachewrtbuild@main
+        if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
+        with:
+          ccache: 'true'
+          mixkey: 'Lean-bcm27xx-bcm2711-rpi-4B'
+          prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
         run: |
