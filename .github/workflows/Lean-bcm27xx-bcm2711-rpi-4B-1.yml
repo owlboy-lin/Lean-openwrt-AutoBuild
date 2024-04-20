@@ -159,15 +159,15 @@ jobs:
       #     cd openwrt
       #     chmod +x ./rpi-4B.sh && ./rpi-4B.sh
 
-      - name: Costom configure file
-        env:
-          CONFIG_FILE: rpi-4B/config.rpi-4B
-        run: |
-          rm -f openwrt/.config*
-          mv $CONFIG_FILE openwrt/.config
-          cd openwrt
-          sed -i 's/^[ \t]*//g' ./.config
-          make defconfig
+      # - name: Costom configure file
+      #   env:
+      #     CONFIG_FILE: rpi-4B/config.rpi-4B
+      #   run: |
+      #     rm -f openwrt/.config*
+      #     mv $CONFIG_FILE openwrt/.config
+      #     cd openwrt
+      #     sed -i 's/^[ \t]*//g' ./.config
+      #     make defconfig
 
       - name: patch2补丁和自定义设置
         if: (!cancelled())
