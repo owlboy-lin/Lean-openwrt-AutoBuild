@@ -91,8 +91,6 @@ jobs:
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir 
 
-      - name: 准备完成
-        uses: actions/checkout@v4
           
       - name: 更新时区、编译时间
         id: date
@@ -105,7 +103,9 @@ jobs:
           echo "编译开始时间..."
           START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
           echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
-            
+
+      - name: 准备完成
+        uses: actions/checkout@v4
            
       - name: 下载源代码
         working-directory: /workdir
