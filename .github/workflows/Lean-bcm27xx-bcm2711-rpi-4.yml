@@ -51,9 +51,6 @@ jobs:
     name: Lean-bcm27xx-bcm2711-rpi-4
 
     steps:
-      - name: 准备完成
-        uses: actions/checkout@v4
-
       - name: 初始化系统环境
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -88,6 +85,8 @@ jobs:
           START_TIME=`date +'%Y-%m-%d %H:%M:%S'`
           echo "START_SECONDS=$(date --date="$START_TIME" +%s)" >> $GITHUB_ENV
 
+      - name: 准备完成
+        uses: actions/checkout@v4
 
       - name: 下载源代码
         working-directory: /workdir
@@ -96,11 +95,11 @@ jobs:
           git clone $REPO_URL -b $REPO_BRANCH openwrt
           ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-      - name: 缓存
-        uses: klever1988/cachewrtbuild@main
-        with:
-          ccache: 'true'
-          prefix: ${{ github.workspace }}/openwrt
+      # - name: 缓存
+      #   uses: klever1988/cachewrtbuild@main
+      #   with:
+      #     ccache: 'true'
+      #     prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
         run: |
