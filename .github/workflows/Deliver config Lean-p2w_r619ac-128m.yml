@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Deliver config Lean-bcm27xx-bcm2711-rpi-4B
+name: Deliver config Lean-p2w_r619ac-128m
 
 on:
 #  schedule:
@@ -57,7 +57,7 @@ jobs:
 
     runs-on: ubuntu-latest
     
-    name: Deliver config Lean-bcm27xx-bcm2711-rpi-4B
+    name: Deliver config Lean-p2w_r619ac-128m
 
     steps:
       # - name: Free Disk Space
