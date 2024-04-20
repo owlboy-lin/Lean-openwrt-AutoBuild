@@ -196,17 +196,11 @@ jobs:
           name: ${{ env.Firmware_Name }}_${{ env.FILE_DATE }}
           path: openwrt/artifact/buildinfo/
 
-      - name: 获取内核版本号
-        run: |
-          cd openwrt/bin/targets/bcm27xx/bcm2711
-          KERNEL_VERSION=$(ls -l *openwrt-bcm27xx-bcm2711-rpi-4-generic-kernel.bin | awk '{print $9}' | cut -d '-' -f1)
-          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-
       - name: 生成发布标签
         id: tag
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "release_tag=$(date +"%Y.%m.%d")-Lean-bcm27xx-bcm2711-rpi-4B" >> $GITHUB_OUTPUT
+          echo "release_tag=$(date +"%Y.%m.%d")-Lean-x86_64-编译信息OpenWrt-CI.info" >> $GITHUB_OUTPUT
           echo "release_date=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "
@@ -214,17 +208,7 @@ jobs:
           ★ 分支 : master
           ★ 感谢源码作者无私分享！
           
-          ⏰ 编译时间：${{ env.FILE_TIME1 }}
-          
-          🎈 内核版本：${{ env.KERNEL_PATCHVER }}
-          
-          🎉 编译版本：${{ env.DISTRIB_REVISION }}
-          
-          🖥 管理地址：192.168.1.1 
-          
-          🌴 名称：root
-          
-          🛠 密码：password" >> release.txt
+          输出编译信息 OpenWrt-CI.info" >> release.txt
           echo "status=success" >> $GITHUB_OUTPUT
       
       - name: 自动发布固件到 Releases
@@ -233,7 +217,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} Lean-bcm27xx-bcm2711-rpi-4B ${{ env.name }}
+          name: ${{ steps.tag.outputs.release_date }} 编译信息 Lean-bcm27xx-bcm2711-rpi-4B 
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: ${{ env.FIRMWARE }}/*
