@@ -136,9 +136,9 @@ jobs:
   
           ZZZ="package/lean/default-settings/files/zzz-default-settings"
           echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
-          echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
+          echo "KERNEL_PATCHVER=$(cat target/linux/bcm27xx/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
           echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
-          echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
+          echo "	    内核版本：$(cat target/linux/bcm27xx/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
   
           echo
           echo "=========================================="
@@ -286,7 +286,7 @@ jobs:
       - name: 获取内核版本号
         run: |
           cd openwrt/bin/targets/x86/64
-          KERNEL_VERSION=$(ls -l *openwrt-x86-64-generic-kernel.bin | awk '{print $9}' | cut -d '-' -f1)
+          KERNEL_VERSION=$(ls -l *openwrt-aarch64-cortex-a72-generic-kernel.bin | awk '{print $9}' | cut -d '-' -f1)
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
       - name: 生成发布标签
