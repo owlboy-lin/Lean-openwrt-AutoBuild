@@ -72,9 +72,7 @@ jobs:
       #     echo "--------------------------硬盘信息--------------------------"
       #     echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
 
-      - name: 准备完成
-        uses: actions/checkout@v4
-            
+           
       - name: 初始化系统环境
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -93,7 +91,9 @@ jobs:
           sudo mkdir -p /workdir
           sudo chown $USER:$GROUPS /workdir 
 
-            
+      - name: 准备完成
+        uses: actions/checkout@v4
+          
       - name: 更新时区、编译时间
         id: date
         run: |
