@@ -6,7 +6,7 @@
 # Copyright (C) 2020 KFERMercer
 #
 
-name: Deliver config Lean-Mosdns(P)
+name: Deliver config Lean-bcm27xx-bcm2711-rpi-4
 
 on:
   # schedule:
@@ -50,7 +50,7 @@ jobs:
   build_openwrt:
 
 
-    name: Deliver config Lean-Mosdns(P)
+    name: Deliver config Lean-bcm27xx-bcm2711-rpi-4
 
     runs-on: ubuntu-latest
     
