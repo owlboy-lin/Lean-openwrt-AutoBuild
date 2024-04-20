@@ -309,10 +309,11 @@ jobs:
       - name: 整理固件文件
         id: organize
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_ORGANIZE == 'true' && !cancelled()
-        run: |  
+        run: |
           cd openwrt/bin/targets/*/*
+          rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "status=success" >> $GITHUB_OUTPUT
+          echo "::set-output name=status::success"
           
       - name: Prepare artifact
         run: |
@@ -378,7 +379,7 @@ jobs:
       - name: 获取内核版本号
         run: |
           cd openwrt/bin/targets/*/*
-          KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m-squashfs-nand-sysupgrade.bin | awk '{print $9}' | cut -d '-' -f1)
+          KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m*.bin | awk '{print $9}' | cut -d '-' -f1)
           echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
       - name: 生成发布标签
