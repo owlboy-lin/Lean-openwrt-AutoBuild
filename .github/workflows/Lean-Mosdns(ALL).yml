@@ -134,7 +134,7 @@ jobs:
         if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
         with:
           ccache: 'true'
-          mixkey: 'Lean-bcm27xx-bcm2711-rpi-4B'
+          mixkey: 'Lean-Mosdns(ALL)'
           prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
