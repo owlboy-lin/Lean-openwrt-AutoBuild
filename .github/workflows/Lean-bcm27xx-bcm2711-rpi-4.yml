@@ -39,7 +39,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: OpenWrt-CI.info
+  CONFIG_FILE: rpi-4B/Lean-bcm27xx-bcm2711-rpi-4.info
   Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4B
   DIY_P1_SH: rpi-4B/rpi-4B-1.sh
   DIY_P2_SH: rpi-4B/rpi-4B-2.sh
@@ -60,19 +60,6 @@ jobs:
     name: Lean-bcm27xx-bcm2711-rpi-4B
 
     steps:
-      - name: Free Disk Space
-        uses: endersonmenezes/free-disk-space@v2
-        with:
-          remove_android: true
-          remove_dotnet: true
-          remove_haskell: true
-          remove_tool_cache: true
-          remove_swap: true
-          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
-          remove_packages_one_command: true
-          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
-          testing: false
-
       - name: Free Disk Space
         uses: endersonmenezes/free-disk-space@v2
         with:
