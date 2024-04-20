@@ -39,7 +39,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: rpi-4B/Lean-bcm27xx-bcm2711-rpi-4.info
+  CONFIG_FILE: Lean-bcm27xx-bcm2711-rpi-4.info
   Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4B
   DIY_P1_SH: rpi-4B/rpi-4B-1.sh
   DIY_P2_SH: rpi-4B/rpi-4B-2.sh
@@ -169,8 +169,8 @@ jobs:
           cd openwrt
           make defconfig
           make download -j$(($(nproc)+1))
-          # find dl -size -1024c -exec ls -l {} \;
-          # find dl -size -1024c -exec rm -f {} \;
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
         
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
