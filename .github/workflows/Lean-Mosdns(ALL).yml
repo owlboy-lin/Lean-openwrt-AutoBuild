@@ -38,7 +38,7 @@ env:
   Firmware_Name: Lean-Mosdns-netspeed-uugame-netdate-ALL
   DIY_P1_SH: smpackage/smpackage-1-p.sh
   DIY_P2_SH: smpackage/smpackage-2-all.sh
-  UPLOAD_ORGANIZE: false
+  UPLOAD_ORGANIZE: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
@@ -249,6 +249,7 @@ jobs:
           echo "status=success" >> $GITHUB_OUTPUT
           
       - name: Prepare artifact
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt
           mkdir -p ./artifact/firmware
@@ -260,37 +261,34 @@ jobs:
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
           cp -rf ./.config ./artifact/buildinfo/
           cp -rf ./feeds.conf.default ./artifact/buildinfo/
-          cd ./bin/targets/*/*
-          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "status=success" >> $GITHUB_OUTPUT  
+          # cd ./bin/targets/*/*
+          # echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          # echo "status=success" >> $GITHUB_OUTPUT  
           
-      - name: Upload bin directory
-        uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-        with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: openwrt/bin
-
-      - name: Upload firmware directory
-        uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
-        with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: ${{ env.FIRMWARE }}/firmware/
+      # - name: Upload bin directory
+      #   uses: actions/upload-artifact@v4
+      #   if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      #   with:
+      #     name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+      #     path: openwrt/bin
 
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_buildinfo${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_buildinfo
           path: openwrt/artifact/buildinfo/
 
       - name: Deliver package
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_package
           path: openwrt/artifact/package/
+
+      - name: Deliver firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_firmware
+          path: openwrt/artifact/firmware/
   
       - name: 获取内核版本号
         run: |
