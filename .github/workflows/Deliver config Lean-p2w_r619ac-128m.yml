@@ -41,8 +41,8 @@ env:
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: OpenWrt-CI.info
   Firmware_Name: Lean-p2w_r619ac-128m
-  DIY_P1_SH: rpi-4B/rpi-4B-1.sh
-  DIY_P2_SH: rpi-4B/rpi-4B-2.sh
+  DIY_P1_SH: p2w_r619ac-128m/p2w_r619ac-128m-1.sh
+  DIY_P2_SH: p2w_r619ac-128m/p2w_r619ac-128m-2.sh
   UPLOAD_ORGANIZE: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
