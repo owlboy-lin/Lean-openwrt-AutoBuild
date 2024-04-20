@@ -135,6 +135,7 @@ jobs:
 
       - name: 缓存
         uses: klever1988/cachewrtbuild@main
+        if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
         with:
           ccache: 'true'
           mixkey: 'Lean-bcm27xx-bcm2711-rpi-4B'
