@@ -44,7 +44,7 @@ env:
   DIY_P1_SH: rpi-4B/rpi-4B-1.sh
   DIY_P2_SH: rpi-4B/rpi-4B-2.sh
   UPLOAD_ORGANIZE: true
-  UPLOAD_BIN_DIR: false
+  UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
