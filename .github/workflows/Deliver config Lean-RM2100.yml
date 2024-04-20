@@ -39,10 +39,10 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: rpi-4B/Lean-bcm27xx-bcm2711-rpi-4B.info
+  CONFIG_FILE: OpenWrt-CI.info
   Firmware_Name: Lean-RM2100
-  DIY_P1_SH: rpi-4B/rpi-4B-1.sh
-  DIY_P2_SH: rpi-4B/rpi-4B-2.sh
+  DIY_P1_SH: RM2100/RM2100-1.sh
+  DIY_P2_SH: RM2100/RM2100-2.sh
   UPLOAD_ORGANIZE: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
