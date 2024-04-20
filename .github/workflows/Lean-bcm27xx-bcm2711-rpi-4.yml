@@ -245,21 +245,21 @@ jobs:
 
         
       - name: Upload firmware directory
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: ${{ env.FIRMWARE }}
 
       - name: Deliver buildinfo
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_buildinfo${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/buildinfo/
 
       - name: Deliver package
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v4
         if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}

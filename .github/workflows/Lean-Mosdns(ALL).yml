@@ -272,23 +272,26 @@ jobs:
       #     name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
       #     path: openwrt/bin
 
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@v4
+        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
+        with:
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE }}
+
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v4
+        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_buildinfo
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_buildinfo${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/buildinfo/
 
       - name: Deliver package
         uses: actions/upload-artifact@v4
+        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_package
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/package/
-
-      - name: Deliver firmware
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}_firmware
-          path: openwrt/artifact/firmware/
   
       - name: 获取内核版本号
         run: |
