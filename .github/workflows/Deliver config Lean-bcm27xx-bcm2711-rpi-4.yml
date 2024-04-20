@@ -214,7 +214,7 @@ jobs:
       
       - name: 自动发布固件到 Releases
         uses: softprops/action-gh-release@v2
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
@@ -225,7 +225,6 @@ jobs:
 
       - name: 删除运行记录
         uses: Mattraks/delete-workflow-runs@v2
-        if: steps.compile.outputs.status == 'success' && !cancelled()
         continue-on-error: true
         with:
           retain_days: 3     #保留最后多少记录不删除
@@ -234,7 +233,7 @@ jobs:
       - name: 删除自动发布的旧固件
         uses: dev-drprasad/delete-older-releases@v0.3.3
         continue-on-error: true
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+        if: env.UPLOAD_RELEASE == 'true' && !cancelled()
         with:
           keep_latest: 20        #保留多少个releases不删除
           delete_tags: true
