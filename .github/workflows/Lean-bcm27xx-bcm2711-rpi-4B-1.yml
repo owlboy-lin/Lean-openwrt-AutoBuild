@@ -27,6 +27,12 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
+        
+      CACHE_BUILD:
+        description: '缓存加速'
+        required: false
+        default: 'true'
+        type: boolean
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -71,6 +77,7 @@ jobs:
           remove_packages_one_command: true
           remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
           testing: false
+
       # - name: CPU检测
       #   run: |
       #     echo "警告⚠"
@@ -240,8 +247,8 @@ jobs:
           grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
           sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
           sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
-          sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
-          sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
+          # sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
+          # sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
           sed -i 's/=y/\ /g' Plug-in
           awk '$0=NR$0' Plug-in > Plug-2
           awk '{print "	" $0}' Plug-2 > Plug-in
