@@ -317,7 +317,7 @@ jobs:
         if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: ${{ env.FIRMWARE }}/firmware/
+          path: openwrt/artifact/firmware/
 
       - name: Deliver buildinfo
         uses: actions/upload-artifact@v4
