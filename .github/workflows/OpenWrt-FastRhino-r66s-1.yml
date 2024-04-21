@@ -8,15 +8,17 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Lean-bcm27xx-bcm2711-rpi-4B-1
+name: OpenWrt-FastRhino-r66s-1
 
 on:
-#  schedule:
-#    - cron: 0 20 * * *
+
+# 定时触发编译(每月1日早3点)
+  schedule:
+    - cron: 0 17 2,12,22 * *
 
   release:
     types: [published]
- 
+  
   watch:
     types: [started]
 
@@ -33,15 +35,17 @@ on:
         required: false
         default: 'true'
         type: boolean
+          
+
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: rpi-4B/Lean-bcm27xx-bcm2711-rpi-4.info
-  Firmware_Name: Lean-bcm27xx-bcm2711-rpi-4B
-  DIY_P1_SH: rpi-4B/rpi-4B-1.sh
-  DIY_P2_SH: rpi-4B/rpi-4B-2.sh
+  CONFIG_FILE: r66s/6.1/config/r66s.config
+  Firmware_Name: OpenWrt-FastRhino-r66s    
+  DIY_P1_SH: r66s/6.1/diy-part1.sh
+  DIY_P2_SH: r66s/6.1/diy-part2.sh
   UPLOAD_ORGANIZE: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
@@ -52,20 +56,13 @@ env:
   TZ: Asia/Shanghai 
 
 jobs:
+  build:
+    name: OpenWrt-FastRhino-r66s-1
 
-
-  build_openwrt:
-
-        
-    name: Lean-bcm27xx-bcm2711-rpi-4B-1
-        
-    # if: github.event.repository.owner.id == github.event.sender.id
-        
     runs-on: ubuntu-latest
 
-
     steps:
-      - name: Free Disk Space
+      - name: 释放磁盘空间
         uses: endersonmenezes/free-disk-space@v2
         with:
           remove_android: true
@@ -77,41 +74,35 @@ jobs:
           remove_packages_one_command: true
           remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/share/glade* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell"
           testing: false
-
-      # - name: CPU检测
-      #   run: |
-      #     echo "警告⚠"
-      #     echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
-      #     echo -e "已知CPU型号(降序): 7763，8370C，8272CL，8171M，E5-2673\n"
-      #     echo "--------------------------CPU信息--------------------------"
-      #     echo "CPU物理数量: $(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
-      #     echo "CPU核心数量: $(nproc)"
-      #     echo -e "CPU型号信息:$(cat /proc/cpuinfo | grep -m1 name | awk -F: '{print $2}')\n"
-      #     echo "--------------------------内存信息--------------------------"
-      #     echo "已安装内存详细信息:"
-      #     echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
-      #     echo "--------------------------硬盘信息--------------------------"
-      #     echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
-
-           
+      
+      - name: CPU检测
+        run: |
+          echo "警告⚠"
+          echo "分配的服务器性能有限，若选择的插件过多，务必注意CPU性能！"
+          echo -e "已知CPU型号(降序): 7763，8370C，8272CL，8171M，E5-2673\n"
+          echo "--------------------------CPU信息--------------------------"
+          echo "CPU物理数量: $(cat /proc/cpuinfo | grep "physical id" | sort | uniq | wc -l)"
+          echo "CPU核心数量: $(nproc)"
+          echo -e "CPU型号信息:$(cat /proc/cpuinfo | grep -m1 name | awk -F: '{print $2}')\n"
+          echo "--------------------------内存信息--------------------------"
+          echo "已安装内存详细信息:"
+          echo -e "$(sudo lshw -short -C memory | grep GiB)\n"
+          echo "--------------------------硬盘信息--------------------------"
+          echo "硬盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l)" && df -hT
+      
       - name: 初始化系统环境
         env:
           DEBIAN_FRONTEND: noninteractive
         run: |
-          docker rmi `docker images -q`
-          sudo -E rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d /usr/local/lib/android
-          sudo -E apt-mark hold grub-efi-amd64-signed
-          sudo -E apt update
-          sudo -E apt -y purge azure-cli* docker* ghc* zulu* llvm* firefox google* dotnet* powershell* openjdk* mysql* php* mongodb* dotnet* snap*
-          sudo -E apt -y full-upgrade
-          sudo -E apt -y install ack antlr3 aria2 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp nano ninja-build p7zip p7zip-full patch pkgconf python3 python3-pip libpython3-dev qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-          sudo -E systemctl daemon-reload
-          sudo -E apt -y autoremove --purge
-          sudo -E apt clean
-          sudo -E timedatectl set-timezone "Asia/Shanghai"
+          sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+          sudo -E apt-get -qq update
+          sudo -E apt-get -qq install $(curl -fsSL https://github.com/popeyema/OpenWrt-R66s/raw/main/depends-ubuntu-latest)
+          sudo apt install clang
+          sudo -E apt-get -qq autoremove --purge
+          sudo -E apt-get -qq clean
+          sudo timedatectl set-timezone "$TZ"
           sudo mkdir -p /workdir
-          sudo chown $USER:$GROUPS /workdir 
-
+          sudo chown $USER:$GROUPS /workdir
           
       - name: 更新时区、编译时间
         id: date
@@ -127,7 +118,7 @@ jobs:
 
       - name: 准备完成
         uses: actions/checkout@v4
-           
+          
       - name: 下载源代码
         working-directory: /workdir
         run: |
@@ -140,33 +131,16 @@ jobs:
         if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
         with:
           ccache: 'true'
-          mixkey: 'Lean-bcm27xx-bcm2711-rpi-4B-1'
+          mixkey: 'OpenWrt-FastRhino-r66s-1'
           prefix: ${{ github.workspace }}/openwrt
-            
-      # - name: Free up disk space
-      #   env:
-      #     DEBIAN_FRONTEND: noninteractive
-      #   run: |
-      #     sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/bin /mnt/openwrt/staging_dir
-      #     ln -sf /mnt/openwrt/dl openwrt/dl
-      #     ln -sf /mnt/openwrt/bin openwrt/bin
-      #     ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
 
       - name: patch1补丁和自定义设置
         if: (!cancelled())
         run: |
-          [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-          chmod +x $DIY_P1_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P1_SH
-
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@v1.0.0
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
-
+            [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
+            chmod +x $DIY_P1_SH
+            cd openwrt
+            $GITHUB_WORKSPACE/$DIY_P1_SH
 
       - name: 更新源 #Update feeds
         if: (!cancelled())
@@ -175,72 +149,38 @@ jobs:
       - name: 安装源 #Install feeds
         if: (!cancelled())
         run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
-
-      # - name: Custom script
-      #   run: |
-      #     mv rpi-4B/rpi-4B.sh openwrt/rpi-4B.sh
-      #     cd openwrt
-      #     chmod +x ./rpi-4B.sh && ./rpi-4B.sh
-
-      # - name: Costom configure file
-      #   env:
-      #     CONFIG_FILE: rpi-4B/config.rpi-4B
-      #   run: |
-      #     rm -f openwrt/.config*
-      #     mv $CONFIG_FILE openwrt/.config
-      #     cd openwrt
-      #     sed -i 's/^[ \t]*//g' ./.config
-      #     make defconfig
-
+      
       - name: patch2补丁和自定义设置
         if: (!cancelled())
         run: |
-          [ -e files ] && mv files openwrt/files
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          chmod +x $DIY_P2_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P2_SH
-          make defconfig
+            [ -e files ] && mv files openwrt/files
+            [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
+            chmod +x $DIY_P2_SH
+            cd openwrt
+            $GITHUB_WORKSPACE/$DIY_P2_SH
 
       - name: SSH connection to Actions
         uses: P3TERX/ssh2actions@v1.0.0
         if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
         env:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
-            
-      - name: 下载固件包
-        id: package
-        run: |
-          cd openwrt
-          make download -j$(($(nproc)+1))
-          find dl -size -1024c -exec ls -l {} \;
-          find dl -size -1024c -exec rm -f {} \;
-
-      - name: Check space usage
-        run: |
-          shopt -s extglob
-          cd openwrt
-          if [[ -f staging_dir/*${{ env.MTARGET }}*/bin ]]; then
-              rm -rf staging_dir/!(*${{ env.MTARGET }}*|host|hostpkg) build_dir/!(*${{ env.MTARGET }}*|host|hostpkg)
-          fi
-          df -hT  
-
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          
       - name: 输出编译信息
         run: |
           cd openwrt
           echo " 系统空间      类型   总数  已用  可用 使用率"
           df -hT $PWD
-           
+          
           echo
           echo "=========================================="
           echo
 
           ZZZ="package/lean/default-settings/files/zzz-default-settings"
           echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
-          echo "KERNEL_PATCHVER=$(cat target/linux/bcm27xx/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
+          echo "KERNEL_PATCHVER=$(cat target/linux/rockchip/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
           echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
-          echo "	    内核版本：$(cat target/linux/bcm27xx/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
+          echo "	    内核版本：$(cat target/linux/rockchip/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
 
           echo
           echo "=========================================="
@@ -270,36 +210,41 @@ jobs:
           echo
           echo
           cat .config
-        
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@v1.0.0
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-      - name: Compile firmware
+      - name: 下载固件包
+        id: package
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j$(($(nproc)+1))
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+
+      - name: 开始编译固件
         id: compile
         run: |
           cd openwrt
           echo -e "$(nproc) thread compile"
           make -j$(nproc) || make -j1 || make -j1 V=s
-          echo "======================="
-          echo "Space usage:"
-          echo "======================="
-          df -h
-          echo "======================="
-          du -h --max-depth=1 ./ --exclude=build_dir --exclude=bin
-          du -h --max-depth=1 ./build_dir
-          du -h --max-depth=1 ./bin
           echo "status=success" >> $GITHUB_OUTPUT
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+          
+      - name: 检查空间使用情况
+        run: |
+          echo "======================="
+          echo "Space usage:"
+          echo "======================="
+          df -hT
+          echo "======================="
+          du -h --max-depth=1 openwrt/ --exclude=build_dir --exclude=bin
+          du -h --max-depth=1 openwrt/build_dir
+          du -h --max-depth=1 openwrt/bin
         
       - name: Check space usage
         if: cancelled()
-        run: df -hT 
+        run: df -hT  
 
       - name: 整理固件文件
         id: organize
@@ -354,36 +299,11 @@ jobs:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/package/
 
-      - name: Upload firmware to cowtransfer
-        id: cowtransfer
-        if: steps.organize.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-        run: |
-          curl -fsSL git.io/file-transfer | sh
-          ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-          echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-          echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-
-      - name: Upload firmware to WeTransfer
-        id: wetransfer
-        if: steps.organize.outputs.status == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-        run: |
-          curl -fsSL git.io/file-transfer | sh
-          ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-          echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-          echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-
-      # - name: 获取内核版本号
-      #   run: |
-      #     cd openwrt/bin/targets/*/*
-      #     KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m*.bin | awk '{print $9}' | cut -d '-' -f1)
-      #     echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
-  
-
       - name: 生成发布标签
         id: tag
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "release_tag=$(date +"%Y.%m.%d")-Lean-bcm27xx-bcm2711-rpi-4B-1" >> $GITHUB_OUTPUT
+          echo "release_tag=$(date +"%Y.%m.%d")-OpenWrt-FastRhino-r66s-1" >> $GITHUB_OUTPUT
           echo "release_date=$(date +"%Y.%m.%d")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "
@@ -410,7 +330,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
         with:
-          name: ${{ steps.tag.outputs.release_date }} Lean-bcm27xx-bcm2711-rpi-4B-1 ${{ env.name }}
+          name: ${{ steps.tag.outputs.release_date }} OpenWrt-FastRhino-r66s-1 ${{ env.name }}
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
           files: openwrt/artifact/firmware/*
@@ -432,4 +352,5 @@ jobs:
           delete_tags: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+  
+  

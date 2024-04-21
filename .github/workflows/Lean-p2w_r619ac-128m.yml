@@ -46,8 +46,8 @@ env:
   Firmware_Name: Lean-p2w_r619ac-128m
   DIY_P1_SH: p2w_r619ac-128m/p2w_r619ac-128m-1.sh
   DIY_P2_SH: p2w_r619ac-128m/p2w_r619ac-128m-2.sh
-  UPLOAD_ORGANIZE: true
-  UPLOAD_BIN_DIR: true
+  UPLOAD_ORGANIZE: false
+  UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
@@ -69,7 +69,7 @@ jobs:
 
 
     steps:
-      - name: Free Disk Space
+      - name: 释放磁盘空间
         uses: endersonmenezes/free-disk-space@v2
         with:
           remove_android: true
@@ -164,14 +164,6 @@ jobs:
           cd openwrt
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@v1.0.0
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
-
-
       - name: 更新源 #Update feeds
         if: (!cancelled())
         run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
@@ -207,20 +199,20 @@ jobs:
           $GITHUB_WORKSPACE/$DIY_P2_SH
           make defconfig
 
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@v1.0.0
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
+      # - name: SSH connection to Actions
+      #   uses: P3TERX/ssh2actions@v1.0.0
+      #   if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      #   env:
+      #     TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      #     TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
             
       - name: 下载固件包
         id: package
         run: |
           cd openwrt
           make download -j$(($(nproc)+1))
-          # find dl -size -1024c -exec ls -l {} \;
-          # find dl -size -1024c -exec rm -f {} \;
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
 
       # - name: Check space usage
       #   run: |
@@ -231,59 +223,59 @@ jobs:
       #     fi
       #     df -hT  
 
-      # - name: 输出编译信息
-      #   run: |
-      #     cd openwrt
-      #     echo " 系统空间      类型   总数  已用  可用 使用率"
-      #     df -hT $PWD
+      - name: 输出编译信息
+        run: |
+          cd openwrt
+          echo " 系统空间      类型   总数  已用  可用 使用率"
+          df -hT $PWD
             
-      #     echo
-      #     echo "=========================================="
-      #     echo
+          echo
+          echo "=========================================="
+          echo
 
-      #     ZZZ="package/lean/default-settings/files/zzz-default-settings"
-      #     echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
-      #     echo "KERNEL_PATCHVER=$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
-      #     echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
-      #     echo "	    内核版本：$(cat target/linux/x86/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
+          ZZZ="package/lean/default-settings/files/zzz-default-settings"
+          echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
+          echo "KERNEL_PATCHVER=$(cat target/linux/ipq40xx/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')" >> $GITHUB_ENV
+          echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
+          echo "	    内核版本：$(cat target/linux/ipq40xx/Makefile|grep KERNEL_PATCHVER | sed 's/^.\{17\}//g')"
 
-      #     echo
-      #     echo "=========================================="
+          echo
+          echo "=========================================="
 
-      #     grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
-      #     grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
-      #     sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
-      #     sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
-      #     sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
-      #     sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
-      #     sed -i 's/=y/\ /g' Plug-in
-      #     awk '$0=NR$0' Plug-in > Plug-2
-      #     awk '{print "	" $0}' Plug-2 > Plug-in
+          grep -i CONFIG_PACKAGE_luci-app .config | grep  -v \# > Plug-in
+          grep -i CONFIG_PACKAGE_luci-theme .config | grep  -v \# >> Plug-in
+          sed -i '/INCLUDE/d' Plug-in > /dev/null 2>&1
+          sed -i 's/CONFIG_PACKAGE_/、/g' Plug-in
+          # sed -i '/Transparent_Proxy/d' Plug-in > /dev/null 2>&1 #排除 luci-app-passwall_Transparent_Proxy
+          # sed -i '/qbittorrent-simple_dynamic/d' Plug-in > /dev/null 2>&1 #排除 luci-app-qbittorrent-simple_dynamic
+          sed -i 's/=y/\ /g' Plug-in
+          awk '$0=NR$0' Plug-in > Plug-2
+          awk '{print "	" $0}' Plug-2 > Plug-in
 
-      #     echo
-      #     echo
-      #     echo "	      已选插件列表"
-      #     cat Plug-in
-      #     rm -rf {Plug-in,Plug-2}
+          echo
+          echo
+          echo "	      已选插件列表"
+          cat Plug-in
+          rm -rf {Plug-in,Plug-2}
 
-      #     echo
-      #     echo "=========================================="
+          echo
+          echo "=========================================="
 
-      #     echo
-      #     echo
-      #     echo "输出完整插件信息..."
-      #     echo
-      #     echo
-      #     cat .config
+          echo
+          echo
+          echo "输出完整插件信息..."
+          echo
+          echo
+          cat .config
         
-      - name: SSH connection to Actions
-        uses: P3TERX/ssh2actions@v1.0.0
-        if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
-        env:
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      # - name: SSH connection to Actions
+      #   uses: P3TERX/ssh2actions@v1.0.0
+      #   if: (github.event.inputs.ssh == 'true' && github.event.inputs.ssh  != 'false') || contains(github.event.action, 'ssh')
+      #   env:
+      #     TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      #     TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
 
-      - name: Compile firmware
+      - name: 编译固件
         id: compile
         run: |
           cd openwrt
@@ -320,9 +312,18 @@ jobs:
           cd openwrt/bin/targets/*/*
           rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "::set-output name=status::success"
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: 上传完整固件目录
+        uses: actions/upload-artifact@v4
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+        with:
+          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE }}
           
-      - name: Prepare artifact
+      - name: 整理固件文件
+        id: artifact
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         run: |
           cd openwrt
           mkdir -p ./artifact/firmware
@@ -334,33 +335,25 @@ jobs:
           cp -rf $(find ./bin/targets/ -type f -name "*.buildinfo" -o -name "*.manifest") ./artifact/buildinfo/
           cp -rf ./.config ./artifact/buildinfo/
           cp -rf ./feeds.conf.default ./artifact/buildinfo/   
-   
-    
-      - name: Upload bin directory
+ 
+       
+      - name: 上传固件
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
-        with:
-          name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: ${{ env.FIRMWARE }}
-
-        
-      - name: Upload firmware directory
-        uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
+        if: steps.compile.outputs.status == 'success' && steps.artifact.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-          path: ${{ env.FIRMWARE }}/firmware/
+          path: openwrt/artifact/firmware/
 
-      - name: Deliver buildinfo
+      - name: 上传配置文件
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
+        if: steps.compile.outputs.status == 'success' && steps.artifact.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_buildinfo${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/buildinfo/
 
-      - name: Deliver package
+      - name: 上传插件
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.organize.outputs.status == 'success'
+        if: steps.compile.outputs.status == 'success' && steps.artifact.outputs.status == 'success'
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/package/
@@ -383,11 +376,11 @@ jobs:
           echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
           echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
 
-      - name: 获取内核版本号
-        run: |
-          cd openwrt/bin/targets/*/*
-          KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m*.bin | awk '{print $9}' | cut -d '-' -f1)
-          echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
+      # - name: 获取内核版本号
+      #   run: |
+      #     cd openwrt/bin/targets/*/*
+      #     KERNEL_VERSION=$(ls -l *openwrt-ipq40xx-generic-p2w_r619ac-128m*.bin | awk '{print $9}' | cut -d '-' -f1)
+      #     echo "KERNEL_VERSION=$KERNEL_VERSION" >> $GITHUB_ENV
 
       - name: 生成发布标签
         id: tag
@@ -423,7 +416,7 @@ jobs:
           name: ${{ steps.tag.outputs.release_date }} Lean-p2w_r619ac-128m ${{ env.name }}
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
-          files: ${{ env.FIRMWARE }}/*
+          files: openwrt/artifact/firmware/*
 
       - name: 删除运行记录
         uses: Mattraks/delete-workflow-runs@v2

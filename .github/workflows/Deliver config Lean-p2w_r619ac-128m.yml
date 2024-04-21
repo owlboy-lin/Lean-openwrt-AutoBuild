@@ -43,14 +43,14 @@ env:
   Firmware_Name: Lean-p2w_r619ac-128m
   DIY_P1_SH: p2w_r619ac-128m/p2w_r619ac-128m-1.sh
   DIY_P2_SH: p2w_r619ac-128m/p2w_r619ac-128m-2.sh
-  UPLOAD_ORGANIZE: true
+  UPLOAD_ORGANIZE: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
   GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
-  TZ: Asia/Shanghai 
+  TZ: Asia/Shanghai  
 
 jobs:
   build_openwrt:
