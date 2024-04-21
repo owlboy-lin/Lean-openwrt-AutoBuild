@@ -167,12 +167,14 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
 
-      - name: Update feeds
-        working-directory: ./openwrt
-        run: |
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
-          ./scripts/feeds install -a
+
+      - name: 更新源 #Update feeds
+        if: (!cancelled())
+        run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
+
+      - name: 安装源 #Install feeds
+        if: (!cancelled())
+        run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
 
       # - name: Custom script
       #   run: |
