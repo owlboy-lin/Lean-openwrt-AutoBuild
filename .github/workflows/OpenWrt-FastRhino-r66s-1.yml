@@ -131,7 +131,7 @@ jobs:
         if: env.CACHE_BUILD == 'true' || (github.event.inputs.CACHE_BUILD == 'true')
         with:
           ccache: 'true'
-          mixkey: 'Lean-p2w_r619ac-128m'
+          mixkey: 'OpenWrt-FastRhino-r66s-1'
           prefix: ${{ github.workspace }}/openwrt
 
       - name: patch1补丁和自定义设置
