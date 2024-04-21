@@ -413,7 +413,7 @@ jobs:
           name: ${{ steps.tag.outputs.release_date }} Lean-bcm27xx-bcm2711-rpi-4B-1 ${{ env.name }}
           tag_name: ${{ steps.tag.outputs.release_tag }}
           body_path: release.txt
-          files: ${{ env.FIRMWARE }}/*
+          files: openwrt/artifact/firmware/*
 
       - name: 删除运行记录
         uses: Mattraks/delete-workflow-runs@v2
