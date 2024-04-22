@@ -151,6 +151,10 @@ jobs:
         if: (!cancelled())
         run: cd openwrt && ./scripts/feeds clean && ./scripts/feeds update -a
 
+      - name: 安装源 #Install feeds
+        if: (!cancelled())
+        run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
+
       - name: iStore商店
         if: env.UPDATE_ISTORE == 'true' && !cancelled()
         run: |
@@ -158,10 +162,6 @@ jobs:
           echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
           ./scripts/feeds update istore
           ./scripts/feeds install -d y -p istore luci-app-store
-
-      - name: 安装源 #Install feeds
-        if: (!cancelled())
-        run: cd openwrt && ./scripts/feeds install -a && ./scripts/feeds install -a
 
 
       - name: patch2补丁和自定义设置
