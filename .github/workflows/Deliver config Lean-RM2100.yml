@@ -43,9 +43,10 @@ env:
   Firmware_Name: Lean-RM2100
   DIY_P1_SH: RM2100/RM2100-1.sh
   DIY_P2_SH: RM2100/RM2100-2.sh
-  UPLOAD_ORGANIZE: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
+  UPLOAD_BUILDINFO: true
+  UPLOAD_PACKAGE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
@@ -184,7 +185,7 @@ jobs:
           cp -rf ./feeds.conf.default ./artifact/buildinfo/
           cd ./artifact/buildinfo/
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-          echo "status=success" >> $GITHUB_OUTPUT
+          echo "status=success" >> $GITHUB_OUTPUT`
           
         
       - name: SSH connection to Actions
