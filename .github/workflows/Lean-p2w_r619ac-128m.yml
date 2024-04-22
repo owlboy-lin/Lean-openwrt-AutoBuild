@@ -339,21 +339,21 @@ jobs:
        
       - name: 上传固件
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.artifact.outputs.status == 'success'
+        if: steps.artifact.outputs.status == 'success' && !cancelled()
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/firmware/
 
       - name: 上传配置文件
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.artifact.outputs.status == 'success'
+        if: steps.artifact.outputs.status == 'success' && !cancelled()
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_buildinfo${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/buildinfo/
 
       - name: 上传插件
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && steps.artifact.outputs.status == 'success'
+        if: steps.artifact.outputs.status == 'success' && !cancelled()
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/package/
