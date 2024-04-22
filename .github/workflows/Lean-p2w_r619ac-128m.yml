@@ -46,9 +46,10 @@ env:
   Firmware_Name: Lean-p2w_r619ac-128m
   DIY_P1_SH: p2w_r619ac-128m/p2w_r619ac-128m-1.sh
   DIY_P2_SH: p2w_r619ac-128m/p2w_r619ac-128m-2.sh
-  UPLOAD_ORGANIZE: false
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
+  UPLOAD_BUILDINFO: true
+  UPLOAD_PACKAGE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
   UPLOAD_RELEASE: true
@@ -295,7 +296,7 @@ jobs:
           echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
         
       - name: Check space usage
-        if: cancelled()
+        if: !cancelled()
         run: df -hT
 
       - name: SSH connection to Actions
@@ -305,25 +306,25 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}  
 
-      - name: 整理固件文件
+      - name: 整理文件
         id: organize
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_ORGANIZE == 'true' && !cancelled()
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true' && !cancelled()
         run: |
           cd openwrt/bin/targets/*/*
-          rm -rf packages
+          # rm -rf packages
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
 
       - name: 上传完整固件目录
         uses: actions/upload-artifact@v4
-        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true' && !cancelled()
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: ${{ env.FIRMWARE }}
           
       - name: 整理固件文件
         id: artifact
-        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+        if: !cancelled()
         run: |
           cd openwrt
           mkdir -p ./artifact/firmware
@@ -338,21 +339,24 @@ jobs:
  
        
       - name: 上传固件
+        id: firmaware
+        if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         uses: actions/upload-artifact@v4
-        if: cancelled()
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_firmware_${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/firmware/
 
       - name: 上传配置文件
-        if: cancelled()
+        id: buildinfo
+        if: env.UPLOAD_BUILDINFO == 'true' && !cancelled()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_buildinfo${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
           path: openwrt/artifact/buildinfo/
 
       - name: 上传插件
-        if: cancelled()
+        id: package
+        if: env.UPLOAD_PACKAGE == 'true' && !cancelled()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.Firmware_Name }}_${{ env.REPO_BRANCH }}_package${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
