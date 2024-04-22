@@ -339,7 +339,6 @@ jobs:
  
        
       - name: 上传固件
-        id: firmaware
         if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
         uses: actions/upload-artifact@v4
         with:
@@ -347,7 +346,6 @@ jobs:
           path: openwrt/artifact/firmware/
 
       - name: 上传配置文件
-        id: buildinfo
         if: env.UPLOAD_BUILDINFO == 'true' && !cancelled()
         uses: actions/upload-artifact@v4
         with:
@@ -355,7 +353,6 @@ jobs:
           path: openwrt/artifact/buildinfo/
 
       - name: 上传插件
-        id: package
         if: env.UPLOAD_PACKAGE == 'true' && !cancelled()
         uses: actions/upload-artifact@v4
         with:
