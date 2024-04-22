@@ -383,8 +383,8 @@ jobs:
         id: tag
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
         run: |
-          echo "release_tag=$(date +"%Y.%m.%d-%H:%M")-Lean-p2w_r619ac-128m" >> $GITHUB_OUTPUT
-          echo "release_date=$(date +"%Y.%m.%d-%H:%M")" >> $GITHUB_OUTPUT
+          echo "release_tag=$(date +"%Y.%m.%d.%H.%M")-Lean-p2w_r619ac-128m" >> $GITHUB_OUTPUT
+          echo "release_date=$(date +"%Y.%m.%d.%H.%M")" >> $GITHUB_OUTPUT
           touch release.txt
           echo "
           ★ 源码 : https://github.com/coolsnowwolf/lede
